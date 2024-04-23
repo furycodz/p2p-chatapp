@@ -117,7 +117,7 @@ export default function ChatSection() {
             <div class="absolute bottom-0 left-0 h-28 w-full  dark:border-[#3f465a] border-[#d8dae0] border-t-[1px] flex items-center justify-between p-10">
                 <FontAwesomeIcon icon={faPlus} size="lg" className="text-[#1786d8] bg-[#f1f2f4] p-4 rounded-3xl dark:bg-[#262d3b]"/>
                 {/* <i class="fa-solid fa-plus text-[#1786d8] bg-[#f1f2f4] p-4 rounded-3xl" ></i> */}
-                <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => {handleSubmit(e)}} type="text" class="w-[88%] h-12 rounded-3xl bg-[#f1f2f4] text-gray-700 outline-none px-6 dark:bg-[#262d3b] dark:text-white" placeholder={language[typeof window !== "undefined" ? window.localStorage.getItem('lang') : 'en'].type_text}/>
+                <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => {handleSubmit(e)}} type="text" class="w-[88%] h-12 rounded-3xl bg-[#f1f2f4] text-gray-700 outline-none px-6 dark:bg-[#262d3b] dark:text-white" placeholder={language['en'].type_text}/>
                 {/* <i class="fa-solid fa-microphone text-[24px]"></i>
                 <i class="fa-solid fa-camera text-[24px]"></i> */}
                 <FontAwesomeIcon size="lg" icon={faMicrophone} className="dark:text-gray-200"/>

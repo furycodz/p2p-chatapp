@@ -121,7 +121,8 @@ export default function Home() {
             <div class=" bg-white h-8 rounded-2xl px-5 flex items-center gap-3 w-full mx-7 dark:bg-[#3e4457]">
                 <FontAwesomeIcon icon={faMagnifyingGlass} size="lg" className="text-center dark:text-gray-200"/>
                 <i class="fa-solid fa-magnifying-glass text-center"></i>
-                <input type="text" class="text-gray-700 outline-none dark:bg-[#3e4457] dark:text-gray-200" placeholder={language[typeof window !== "undefined" ? window.localStorage.getItem('lang') : 'en'].search_text}/>
+                <input type="text" class="text-gray-700 outline-none dark:bg-[#3e4457] dark:text-gray-200" placeholder={language['en'].search_text}/>
+                {/* <input type="text" class="text-gray-700 outline-none dark:bg-[#3e4457] dark:text-gray-200" placeholder={language[typeof window !== "undefined" ? window.localStorage.getItem('lang') : 'en'].search_text}/> */}
 
             </div>
         </div>

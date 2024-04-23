@@ -7,28 +7,7 @@ import { useState,useEffect } from 'react';
 
 export default function ChatSection() {
     const [text,setText] = useState("")
-    const handleSubmit = (e) =>{
-        if (e.key === 'Enter') {
-            messages.push(
-                {
-                    isSent: true,
-                    message: text,
-                    date: "23:52 PM"
-                }
-            )
-            setText("")
-            console.log(messages)
-          }
-    }
-    const language = {
-        fr: {
-            type_text:"Ecrire un message ..."
-        },
-        en: {
-            type_text:"Type a message ..."
-        }
-    }
-    const messages = [
+    const [messages,setMessages] = useState([
         {
             isSent: true,
             message: "Test 1",
@@ -51,9 +30,34 @@ export default function ChatSection() {
             message: "Test 1",
             date: "23:52 PM"
         },
-    ]
+    ])
+    const handleSubmit = (e) =>{
+        if (e.key === 'Enter' && text.length != 0 && text != " ") {
+            
+            const a =   {
+                isSent: true,
+                message: text,
+                date: "23:52 PM"
+            }
+            setMessages(messages => [...messages, a]);
+           
+            setText("")
+            console.log(messages)
+          }
+    }
+    const language = {
+        fr: {
+            type_text:"Ecrire un message ..."
+        },
+        en: {
+            type_text:"Type a message ..."
+        }
+    }
+    // const messages = [
+       
+    // ]
     return (
-      <div class="w-3/4 relative dark:bg-[#1a202c]">
+      <div class="w-3/4 relative dark:bg-[#1a202c]  h-screen">
 
             <div class="h-24 bg-[#fdfdfd] border-[#d8dae0] dark:border-[#3f465a] border-b-[1px] p-10 flex items-center dark:bg-[#1a202c]">
                 <div class="flex items-center gap-4 ">
@@ -70,18 +74,19 @@ export default function ChatSection() {
                 </div>
             </div>
          
-            <div class="mx-9 flex flex-col ">
+            <div class="mx-9 flex flex-col  ">
                 {messages.map((message)=>{
+                    
                     if (message.isSent) {
                         return(
-                            <div class="send-container w-fit self-end my-5">
+                            <div class="send-container w-fit self-end my-2">
                                 <p class="bg-[#f1f2f4] w-fit py-[0.35rem] px-5 rounded-2xl text-[0.92rem]">{message.message}</p>
                                 <p class="text-gray-500 text-xs text-right">{message.date}</p>
                             </div>
                         )
                     }else{
                         return(
-                            <div class="rec-container flex gap-3 my-5">
+                            <div class="rec-container flex gap-3 my-3">
                                 <img src={message.pdp} alt="" class="w-12 rounded-xl shadow-lg"/>
                                 <div>
                                     <p class="text-gray-500 text-sm text-left">{message.name} • {message.date}</p>

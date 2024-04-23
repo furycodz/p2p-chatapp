@@ -1,5 +1,5 @@
 "use client";
-import { faCamera,faGear,faMagnifyingGlass,faMicrophone,faMoon,faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faCamera,faCircle,faEllipsis,faGear,faMagnifyingGlass,faMicrophone,faMoon,faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useState,useEffect,useRef } from 'react';
 import Modal from 'react-modal'
@@ -126,8 +126,8 @@ export default function Home() {
             </div>
         </div>
      
-        <div class="">
-           
+        <div class="">  
+        
             <div class="bg-[#e6f2fa] dark:bg-[#313648] border-[#d8dae0] dark:border-[#3f465a] border-b-[1px] h-24 flex items-center justify-between">
                 <div class="flex items-center">
                     <div class="mx-4">
@@ -136,12 +136,12 @@ export default function Home() {
                     </div>
                     <div>
                         <p class="text-gray-800 font-bold dark:text-gray-400">Mohammed</p>
-                        <p class="text-gray-600 text-[13px] font-semibold dark:text-gray-200 ">Test message</p>
+                        <p class="text-gray-600 text-[13px] font-semibold dark:text-gray-200 "><FontAwesomeIcon icon={faCircle} size="md" className="text-center text-green-500 mr-2 animate-pulse"/>Online</p>
                     </div>
                 </div>
                 
                 <div class="mx-4">
-                    <p class="text-sm dark:text-gray-200">Thursday</p>
+                <FontAwesomeIcon icon={faEllipsis} size="lg" className="text-center cursor-pointer dark:text-gray-200"/>
                 </div>
             </div>
             <div class="bg-[#e6f2fa] dark:bg-[#313648] border-[#d8dae0] dark:border-[#3f465a] border-b-[1px] h-24 flex items-center justify-between">
@@ -152,12 +152,12 @@ export default function Home() {
                     </div>
                     <div>
                         <p class="text-gray-800 font-bold dark:text-gray-400">Badr</p>
-                        <p class="text-gray-600 text-[13px] font-semibold dark:text-gray-200 ">Test message</p>
+                        <p class="text-gray-600 text-[13px] font-semibold dark:text-gray-200 "><FontAwesomeIcon icon={faCircle} size="md" className="text-center text-green-500 mr-2 animate-pulse"/>Online</p>
                     </div>
                 </div>
                 
                 <div class="mx-4">
-                    <p class="text-sm dark:text-gray-200">Thursday</p>
+                <FontAwesomeIcon icon={faEllipsis} size="lg" className="text-center cursor-pointer dark:text-gray-200"/>
                 </div>
             </div>
             <div class="bg-[#e6f2fa] dark:bg-[#313648] border-[#d8dae0] dark:border-[#3f465a] border-b-[1px] h-24 flex items-center justify-between">
@@ -168,12 +168,12 @@ export default function Home() {
                     </div>
                     <div>
                         <p class="text-gray-800 font-bold dark:text-gray-400">Omar</p>
-                        <p class="text-gray-600 text-[13px] font-semibold dark:text-gray-200 ">Test message</p>
+                        <p class="text-gray-600 text-[13px] font-semibold dark:text-gray-200 "><FontAwesomeIcon icon={faCircle} size="md" className="text-center text-green-500 mr-2 animate-pulse"/>Online</p>
                     </div>
                 </div>
                 
                 <div class="mx-4">
-                    <p class="text-sm dark:text-gray-200">Thursday</p>
+                    <FontAwesomeIcon icon={faEllipsis} size="lg" className="text-center cursor-pointer dark:text-gray-200"/>
                 </div>
             </div>
             

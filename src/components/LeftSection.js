@@ -4,19 +4,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useState,useEffect,useRef } from 'react';
 import Modal from 'react-modal'
 
-export default function Home() {
+export default function Home({lang, language, setLang}) {
     const [isOpen, setIsOpen] = useState(false)
-    
+
     const [darkmode, setDarkMode] = useState(false)
-    const [lang, setLang] = useState('en')
-    const language = {
-        fr: {
-            search_text:"Chercher ..."
-        },
-        en: {
-            search_text:"Search ..."
-        }
-    }
+
     useEffect(()=>{
         if (typeof window !== 'undefined') {
             localStorage.setItem('lang', lang)
@@ -48,6 +40,8 @@ export default function Home() {
            transform: 'translate(-50%, -50%)'
         }
      }
+
+   
     return (
         <div class="w-1/4 bg-[#fdfdfd] border-[#d8dae0] dark:border-[#3f465a] border-r-[1px] dark:bg-[#1a202c]">
     
@@ -91,8 +85,6 @@ export default function Home() {
                             
                             <div class="relative h-10 w-32 ">
                             <select onClick={(e) => setLang(e.target.value)} 
-                            
-                            value={lang}
                                 class="peer h-full w-full rounded-[7px] border border-blue-gray-200 border-t-transparent bg-transparent px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 empty:!bg-gray-900 focus:border-2 focus:border-gray-900 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50">
                             
                                 <option value="en">English</option>
@@ -119,9 +111,9 @@ export default function Home() {
      
         <div class="h-14 bg-[#f1f2f4] flex items-center justify-center border-b-[1px] dark:bg-[#262d3b] dark:border-[#3f465a]">
             <div class=" bg-white h-8 rounded-2xl px-5 flex items-center gap-3 w-full mx-7 dark:bg-[#3e4457]">
-                <FontAwesomeIcon icon={faMagnifyingGlass} size="lg" className="text-center dark:text-gray-200"/>
+                <FontAwesomeIcon icon={faPlus} size="lg" className="text-center dark:text-gray-200 cursor-pointer"/>
                 <i class="fa-solid fa-magnifying-glass text-center"></i>
-                <input type="text" class="text-gray-700 outline-none dark:bg-[#3e4457] dark:text-gray-200" placeholder="Search ..."/>
+                <input type="text" class="text-gray-700 outline-none dark:bg-[#3e4457] dark:text-gray-200" placeholder={language.search_text} onClick={(e) => createRoom(e)}/>
                 {/* <input type="text" class="text-gray-700 outline-none dark:bg-[#3e4457] dark:text-gray-200" placeholder={language[typeof window !== "undefined" ? window.localStorage.getItem('lang') : 'en'].search_text}/> */}
 
             </div>

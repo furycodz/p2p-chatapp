@@ -16,21 +16,21 @@ export default function Home() {
 
 
 
-  useEffect(()=>{
-      if (typeof window !== 'undefined') {
-          localStorage.setItem('lang', lang)
-      }
+  // useEffect(()=>{
+  //     if (typeof window !== 'undefined') {
+  //         localStorage.setItem('lang', settings.lang)
+  //     }
 
-  },[lang])
+  // },[lang])
 
-  useEffect(() => {
+  // useEffect(() => {
 
-      if (darkmode) {
-          document.body.classList.toggle("dark")
-      } else {
-          document.body.classList.toggle("dark")
-      }
-    }, [darkmode]);
+  //     if (darkmode) {
+  //         document.body.classList.toggle("dark")
+  //     } else {
+  //         document.body.classList.toggle("dark")
+  //     }
+  //   }, [darkmode]);
 
   const language = {
     fr: {

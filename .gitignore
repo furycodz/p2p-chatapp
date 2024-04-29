@@ -9,6 +9,8 @@
 # testing
 /coverage
 
+/src/components/EmptySection.js
+
 # next.js
 /.next/
 /out/

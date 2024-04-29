@@ -1,45 +1,13 @@
 "use client";
 import { faCamera,faCircle,faEllipsis,faGear,faMagnifyingGlass,faMicrophone,faMoon,faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import Settings from './Settings'
 import { useState,useEffect,useRef } from 'react';
 import Modal from 'react-modal'
 
-export default function Home({lang, language, setLang}) {
-    const [isOpen, setIsOpen] = useState(false)
+export default function Home({language, settings,setSettings}) {
 
-    const [darkmode, setDarkMode] = useState(false)
 
-    useEffect(()=>{
-        if (typeof window !== 'undefined') {
-            localStorage.setItem('lang', lang)
-        }
- 
-    },[lang])
-
-    useEffect(() => {
-
-      
-        const root = window.document.documentElement;
-        if (darkmode) {
-            document.body.classList.toggle("dark")
-        } else {
-            document.body.classList.toggle("dark")
-        }
-      }, [darkmode]);
-
-    const customStyles = {
-        overlay: {
-           backgroundColor: 'rgba(0, 0, 0, 0.6)'
-        },
-        content: {
-           top: '50%',
-           left: '50%',
-           right: 'auto',
-           bottom: 'auto',
-           marginRight: '-50%',
-           transform: 'translate(-50%, -50%)'
-        }
-     }
 
    
     return (
@@ -51,8 +19,8 @@ export default function Home({lang, language, setLang}) {
                 <p class="font-bold text-lg text-gray-800 dark:text-gray-200">Badr EL HOUARI</p>
             </div>
             <div>
-                <FontAwesomeIcon icon={faGear} size="lg" className="text-gray-800 cursor-pointer dark:text-gray-200" onClick={() => setIsOpen(true)}/>
-                <Modal isOpen={isOpen} onRequestClose={() => setIsOpen(false)} style={customStyles}> 
+         
+                {/* <Modal isOpen={isOpen} onRequestClose={() => setIsOpen(false)} style={customStyles}> 
                     <div className="rounded-3xl flex flex-col gap-y-4">
                         <h2 className="font-bold w-full border-b-[1px] border-gray-400 mb-4 py-2 text-lg ">Settings</h2>
                         <div class="flex justify-between items-center gap-7">
@@ -102,7 +70,8 @@ export default function Home({lang, language, setLang}) {
                         </div>
    
                     </div> 
-                </Modal>
+                </Modal> */}
+                <Settings settings={settings} setSettings={setSettings} language={language}/>
                 {/* <i class="fa-solid fa-gear text-2xl " id="dark"></i> */}
             </div>
             

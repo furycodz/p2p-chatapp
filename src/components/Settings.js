@@ -1,8 +1,9 @@
 "use client";
-import { faCamera,faMicrophone,faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faCamera,faMicrophone,faPlus, faGear, faMoon } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { useState,useEffect } from 'react';
 
+import { useState,useEffect,useRef } from 'react';
+import Modal from 'react-modal'
 
 
 export default function ChatSection({language, settings, setSettings}) {

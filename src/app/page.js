@@ -2,41 +2,47 @@
 import Image from "next/image";
 import LeftSection from "../components/LeftSection"
 import ChatSection from "../components/ChatSection"
-import { useState, useEffect } from "react";
-
+import { useState, useEffect, useRef } from "react";
+import io from "socket.io-client";
 export default function Home() {
 
   const [settings,setSettings] = useState({
     darkmode: false,
     lang: 'en'
   })
-  const [peers, setPeers] = useState([])
-  // const [lang, setLang] = useState('en')
-  // const [darkmode, setDarkMode] = useState(false)
+  const [rooms, setRooms] = useState([
+    {
+      id: "",
+      profile_picture: "/a.jpg",
+      name: "Mohammed"
+    },
+    {
+      id: "",
+      profile_picture: "/b.jpg",
+      name: "Badr"
+    }
+  ])
+  const socketRef = useRef();
 
-  //Load settings from Local storage 
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
-    const sett = JSON.parse(localStorage.getItem('settings'));
-    if (sett) {
-     setSettings(sett);
-     console.log(sett)
-    }
-    
+      const sett = JSON.parse(localStorage.getItem('settings'));
+      if (sett) {
+        setSettings(sett);
+        console.log(sett)
+      }
+      socketRef.current = io.connect("https://localhost:8000");
+ 
+
     }
   }, []);
-  //Save Settings to Local Storage
+
   useEffect(() => {
     localStorage.setItem('settings', JSON.stringify(settings));
 
   }, [settings]);
 
-  // useEffect(()=>{
-  //     if (typeof window !== 'undefined') {
-  //         localStorage.setItem('lang', settings.lang)
-  //     }
-
-  // },[lang])
 
   useEffect(() => {
    
@@ -50,7 +56,7 @@ export default function Home() {
 
   const language = {
     fr: {
-        search_text:"Ajouter un Contact ou Groupe"
+        search_text:"Create or Join Room"
     },
     en: {
         search_text:"Add Contact or Group"
@@ -59,7 +65,7 @@ export default function Home() {
   return (
     <main className="flex h-screen">
      
-         <LeftSection language={language[settings.lang]} settings={settings} setSettings={setSettings}/>
+         <LeftSection language={language[settings.lang]} settings={settings} setSettings={setSettings} socketRef={socketRef} rooms={rooms}/>
       
         <ChatSection language={language[settings.lang]} /> 
     </main>

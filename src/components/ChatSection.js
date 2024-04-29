@@ -1,5 +1,5 @@
 "use client";
-import { faCamera,faMicrophone,faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faCamera,faMicrophone,faPhone,faPlus, faVideo } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useState,useEffect } from 'react';
 
@@ -59,7 +59,7 @@ export default function ChatSection() {
     return (
       <div class="w-3/4 relative dark:bg-[#1a202c]  h-screen">
 
-            <div class="h-24 bg-[#fdfdfd] border-[#d8dae0] dark:border-[#3f465a] border-b-[1px] p-10 flex items-center dark:bg-[#1a202c]">
+            <div class="h-24 bg-[#fdfdfd] border-[#d8dae0] dark:border-[#3f465a] border-b-[1px] p-10 flex items-center dark:bg-[#1a202c] justify-between">
                 <div class="flex items-center gap-4 ">
                     <div>
                    
@@ -72,6 +72,11 @@ export default function ChatSection() {
                     
                   
                 </div>
+                <div className='flex gap-4'>
+                <FontAwesomeIcon size="lg" icon={faPhone} className="dark:text-gray-200 cursor-pointer"/>
+                <FontAwesomeIcon size="lg" icon={faVideo} className="dark:text-gray-200 cursor-pointer"/>
+                </div>
+
             </div>
          
             <div class="mx-9 flex flex-col  ">

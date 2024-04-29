@@ -14,7 +14,22 @@ export default function Home() {
   // const [lang, setLang] = useState('en')
   // const [darkmode, setDarkMode] = useState(false)
 
+  //Load settings from Local storage 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+    const sett = JSON.parse(localStorage.getItem('settings'));
+    if (sett) {
+     setSettings(sett);
+     console.log(sett)
+    }
+    
+    }
+  }, []);
+  //Save Settings to Local Storage
+  useEffect(() => {
+    localStorage.setItem('settings', JSON.stringify(settings));
 
+  }, [settings]);
 
   // useEffect(()=>{
   //     if (typeof window !== 'undefined') {
@@ -24,12 +39,13 @@ export default function Home() {
   // },[lang])
 
   useEffect(() => {
-
+   
       if (settings.darkmode) {
-          document.body.classList.toggle("dark")
+          document.body.classList.add("dark")
       } else {
-          document.body.classList.toggle("dark")
+          document.body.classList.remove("dark")
       }
+     
     }, [settings.darkmode]);
 
   const language = {

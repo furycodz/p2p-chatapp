@@ -42,7 +42,7 @@ export default function ChatSection() {
             setMessages(messages => [...messages, a]);
            
             setText("")
-            console.log(messages)
+           
           }
     }
     const language = {

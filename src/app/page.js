@@ -23,14 +23,14 @@ export default function Home() {
 
   // },[lang])
 
-  // useEffect(() => {
+  useEffect(() => {
 
-  //     if (darkmode) {
-  //         document.body.classList.toggle("dark")
-  //     } else {
-  //         document.body.classList.toggle("dark")
-  //     }
-  //   }, [darkmode]);
+      if (settings.darkmode) {
+          document.body.classList.toggle("dark")
+      } else {
+          document.body.classList.toggle("dark")
+      }
+    }, [settings.darkmode]);
 
   const language = {
     fr: {

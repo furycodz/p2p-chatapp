@@ -2,7 +2,7 @@
 import Image from "next/image";
 import LeftSection from "../components/LeftSection"
 import ChatSection from "../components/ChatSection"
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Home() {
 

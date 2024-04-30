@@ -1,36 +1,14 @@
 "use client";
 import { faCamera,faMicrophone,faPhone,faPlus, faVideo } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { Romanesco } from 'next/font/google';
 import { useState,useEffect } from 'react';
 
 
 
-export default function ChatSection() {
+export default function ChatSection({sendChannel,roomInfos,setRoomInfos}) {
     const [text,setText] = useState("")
-    const [messages,setMessages] = useState([
-        {
-            isSent: true,
-            message: "Test 1",
-            date: "23:52 PM"
-        },
-        {
-            isSent: false,
-            message: "Test 1",
-            date: "23:52 PM",
-            pdp: "/a.jpg",
-            name: "Mohammed"
-        },
-        {
-            isSent: true,
-            message: "Test 1",
-            date: "23:52 PM"
-        },
-        {
-            isSent: true,
-            message: "Test 1",
-            date: "23:52 PM"
-        },
-    ])
+    
     const handleSubmit = (e) =>{
         if (e.key === 'Enter' && text.length != 0 && text != " ") {
             
@@ -38,24 +16,15 @@ export default function ChatSection() {
                 isSent: true,
                 message: text,
                 date: "23:52 PM"
+                
             }
-            setMessages(messages => [...messages, a]);
-           
+            sendChannel.current.send(text)
+            setRoomInfos({...roomInfos,messages: [...roomInfos.messages, a]})
             setText("")
-           
           }
     }
-    const language = {
-        fr: {
-            type_text:"Ecrire un message ..."
-        },
-        en: {
-            type_text:"Type a message ..."
-        }
-    }
-    // const messages = [
-       
-    // ]
+
+
     return (
       <div class="w-3/4 relative dark:bg-[#1a202c]  h-screen">
 
@@ -66,8 +35,8 @@ export default function ChatSection() {
                         <img src="/a.jpg" alt="" class="w-12 rounded-3xl"/>
                     </div>
                     <div>
-                        <p class="font-bold dark:text-gray-200">Mohammed</p>
-                        <p class="text-gray-500 text-xs text">Last seen 7h ago</p>
+                        <p class="font-bold dark:text-gray-200">{roomInfos.roomName}</p>
+                        <p class="text-gray-500 text-xs text">{roomInfos.roomID}</p>
                     </div>
                     
                   
@@ -80,7 +49,7 @@ export default function ChatSection() {
             </div>
          
             <div class="mx-9 flex flex-col  ">
-                {messages.map((message)=>{
+                {roomInfos.messages.map((message)=>{
                     
                     if (message.isSent) {
                         return(
@@ -101,22 +70,6 @@ export default function ChatSection() {
                         )
                     }
                 })}
-                {/* Received */}
-                {/* <div class="rec-container flex gap-3 my-5">
-                    <img src="/a.jpg" alt="" class="w-12 rounded-xl shadow-lg"/>
-                    <div>
-                        <p class="text-gray-500 text-sm text-left">Mohammed • 23:52 PM</p>
-                        <p class="bg-[#1786d8] shadow-md w-fit py-[0.35rem] px-5 rounded-2xl text-[0.92rem] text-white">Test Message</p>
-                    </div>
-                </div> */}
-            
-             {/* Sent */}
-                {/* <div class="send-container w-fit self-end my-5">
-                    <p class="bg-[#f1f2f4] w-fit py-[0.35rem] px-5 rounded-2xl text-[0.92rem]">Test Message</p>
-                    <p class="text-gray-500 text-xs text-right">23:52 PM</p>
-                </div> */}
-               
-
             </div>
          
             <div class="absolute bottom-0 left-0 h-28 w-full  dark:border-[#3f465a] border-[#d8dae0] border-t-[1px] flex items-center justify-between p-10">

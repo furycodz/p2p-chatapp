@@ -6,33 +6,89 @@ import { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 export default function Home() {
 
+  const socketRef = useRef();
+  const sendChannel = useRef();
   const [settings,setSettings] = useState({
     darkmode: false,
     lang: 'en'
   })
-  const [rooms, setRooms] = useState([
-    {
-      id: "",
-      profile_picture: "/a.jpg",
-      name: "Mohammed"
-    },
-    {
-      id: "",
-      profile_picture: "/b.jpg",
-      name: "Badr"
-    }
-  ])
-  const socketRef = useRef();
 
+  const [roomInfos, setRoomInfos] = useState({
+    roomName: "Testing Room",
+    roomID: "zafaz-qfazf-zafa-azfzaf",
+    messages: [
+      {
+          isSent: true,
+          message: "Test 1",
+          date: "23:52 PM"
+      },
+      {
+          isSent: false,
+          message: "Test 1",
+          date: "23:52 PM",
+          pdp: "/a.jpg",
+          name: "Mohammed"
+      },
+      {
+          isSent: true,
+          message: "Test 1",
+          date: "23:52 PM"
+      },
+      {
+          isSent: true,
+          message: "Test 1",
+          date: "23:52 PM"
+      },
+    ],
+    peers: []
+  })
+
+//   const [messages,setMessages] = useState([
+//     {
+//         isSent: true,
+//         message: "Test 1",
+//         date: "23:52 PM"
+//     },
+//     {
+//         isSent: false,
+//         message: "Test 1",
+//         date: "23:52 PM",
+//         pdp: "/a.jpg",
+//         name: "Mohammed"
+//     },
+//     {
+//         isSent: true,
+//         message: "Test 1",
+//         date: "23:52 PM"
+//     },
+//     {
+//         isSent: true,
+//         message: "Test 1",
+//         date: "23:52 PM"
+//     },
+// ])
+//   const [peers, setPeers] = useState([
+
+//   ])
+  // {
+  //   id: "",
+  //   profile_picture: "/a.jpg",
+  //   name: "Mohammed"
+  // },
+  // {
+  //   id: "",
+  //   profile_picture: "/b.jpg",
+  //   name: "Badr"
+  // }
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const sett = JSON.parse(localStorage.getItem('settings'));
       if (sett) {
         setSettings(sett);
-        console.log(sett)
+     
       }
-      socketRef.current = io.connect("https://localhost:8000");
+      socketRef.current = io.connect("http://localhost:8000");
  
 
     }
@@ -56,18 +112,18 @@ export default function Home() {
 
   const language = {
     fr: {
-        search_text:"Create or Join Room"
+        search_text:"Créer ou rejoindre un groupe"
     },
     en: {
-        search_text:"Add Contact or Group"
+        search_text:"Create or Join Room"
     }
 }
   return (
     <main className="flex h-screen">
      
-         <LeftSection language={language[settings.lang]} settings={settings} setSettings={setSettings} socketRef={socketRef} rooms={rooms}/>
+         <LeftSection language={language[settings.lang]} settings={settings} setSettings={setSettings} socketRef={socketRef}  sendChannel={sendChannel} roomInfos={roomInfos} setRoomInfos={setRoomInfos} />
       
-        <ChatSection language={language[settings.lang]} /> 
+        <ChatSection language={language[settings.lang]} sendChannel={sendChannel} roomInfos={roomInfos} setRoomInfos={setRoomInfos}/> 
     </main>
   );
 }

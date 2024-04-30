@@ -6,44 +6,51 @@ import { useState,useEffect,useRef } from 'react';
 
 import io from "socket.io-client";
 
-export default function Home({language, settings,setSettings, rooms,socketRef}) {
+export default function Home({language, settings,setSettings, socketRef, sendChannel, roomInfos, setRoomInfos}) {
 
-
-    const sendChannel = useRef();
+    const [roomID, setRoomID] = useState("")
 
     const peerRef = useRef();
    
     const otherUser = useRef();
-    const userStream = useRef();
 
-
-    const createRoom = (e) => {
-        socketRef.current.emit("join room", e.target.value);
+    
+    const joinRoom = (e) =>{
+      
+        socketRef.current.emit("join room", roomID);
 
         socketRef.current.on('other user', userID => {
             callUser(userID);
             otherUser.current = userID;
         });
-  
+
         socketRef.current.on("user joined", userID => {
             otherUser.current = userID;
         });
-  
-        socketRef.current.on("offer", handleOffer);
-  
-        socketRef.current.on("answer", handleAnswer);
-  
-        socketRef.current.on("ice-candidate", handleNewICECandidateMsg);
-    }
 
+        socketRef.current.on("offer", handleOffer);
+
+        socketRef.current.on("answer", handleAnswer);
+
+        socketRef.current.on("ice-candidate", handleNewICECandidateMsg);
+        
+        setRoomID("")
+    }
+   
     function callUser(userID) {
         peerRef.current = createPeer(userID);
         sendChannel.current = peerRef.current.createDataChannel("sendChannel")
-        sendChannel.current.onmessage = handleReceiveMessage
+        sendChannel.current.onmessage = handleReceiveMessage;
     }
     function handleReceiveMessage(e) {
-        console.log(e.data)
+        setRoomInfos({...roomInfos,messages: [...roomInfos.messages,{
+            isSent: false,
+            message: e.data,
+            date: "23:52 PM"
+        }]})
+      
     }
+
     function createPeer(userID) {
         const peer = new RTCPeerConnection({
             iceServers: [
@@ -59,7 +66,6 @@ export default function Home({language, settings,setSettings, rooms,socketRef}) 
         });
 
         peer.onicecandidate = handleICECandidateEvent;
-
         peer.onnegotiationneeded = () => handleNegotiationNeededEvent(userID);
 
         return peer;
@@ -81,12 +87,11 @@ export default function Home({language, settings,setSettings, rooms,socketRef}) 
     function handleOffer(incoming) {
         peerRef.current = createPeer();
         peerRef.current.ondatachannel = (event) =>{
-            sendChannel.current = event.channel
-            sendChannel.current.onmessage = handleReceiveMessage;
+            sendChannel.current = event.channel;
+            sendChannel.current.onmessage = handleReceiveMessage
         }
         const desc = new RTCSessionDescription(incoming.sdp);
         peerRef.current.setRemoteDescription(desc).then(() => {
-           
         }).then(() => {
             return peerRef.current.createAnswer();
         }).then(answer => {
@@ -122,12 +127,9 @@ export default function Home({language, settings,setSettings, rooms,socketRef}) 
         peerRef.current.addIceCandidate(candidate)
             .catch(e => console.log(e));
     }
-
     function handleChange(e) {
-        console.log(e)
-    };
-
-
+        setText(e.target.value);
+    }
 
    
     return (
@@ -145,24 +147,24 @@ export default function Home({language, settings,setSettings, rooms,socketRef}) 
      
         <div class="h-14 bg-[#f1f2f4] flex items-center justify-center border-b-[1px] dark:bg-[#262d3b] dark:border-[#3f465a]">
             <div class=" bg-white h-8 rounded-2xl px-5 flex items-center gap-3 w-full mx-7 dark:bg-[#3e4457]">
-                <FontAwesomeIcon icon={faPlus} size="lg" className="text-center dark:text-gray-200 cursor-pointer"/>
+                <FontAwesomeIcon icon={faPlus} size="lg" className="text-center dark:text-gray-200 cursor-pointer" onClick={() => joinRoom()}/>
                 <i class="fa-solid fa-magnifying-glass text-center"></i>
-                <input type="text" class="text-gray-700 outline-none dark:bg-[#3e4457] dark:text-gray-200" placeholder={language.search_text} onClick={(e) => createRoom(e)}/>
+                <input type="text" class="text-gray-700 outline-none dark:bg-[#3e4457] dark:text-gray-200" placeholder={language.search_text} onChange={(e) => setRoom(e.target.value)}/>
 
             </div>
         </div>
      
         <div class="">  
-            {rooms.map((room)=>{
+            {roomInfos.peers.map((peer)=>{
                 return (
                     <div class="bg-[#e6f2fa] cursor-pointer dark:hover:bg-[#272b3a] dark:bg-[#313648] border-[#d8dae0] dark:border-[#3f465a] border-b-[1px] h-24 flex items-center justify-between">
                         <div class="flex items-center">
                             <div class="mx-4">
-                                <img src={room.profile_picture} alt="" class="w-16 rounded-2xl"/>
+                                <img src={peer.profile_picture} alt="" class="w-16 rounded-2xl"/>
         
                             </div>
                             <div>
-                                <p class="text-gray-800 font-bold dark:text-gray-400">{room.name}</p>
+                                <p class="text-gray-800 font-bold dark:text-gray-400">{peer.name}</p>
                                 <p class="text-gray-600 text-[13px] font-semibold dark:text-gray-200 "><FontAwesomeIcon icon={faCircle} size="md" className="text-center text-green-500 mr-2 animate-pulse"/>Online</p>
                             </div>
                         </div>

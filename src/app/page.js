@@ -4,42 +4,21 @@ import LeftSection from "../components/LeftSection"
 import ChatSection from "../components/ChatSection"
 import { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
+import Peer from "simple-peer";
 export default function Home() {
 
   const socketRef = useRef();
-  const sendChannel = useRef();
+  const sendChannel = useRef([]);
   const [settings,setSettings] = useState({
-    darkmode: false,
+    darkmode: true,
     lang: 'en'
   })
 
   const [roomInfos, setRoomInfos] = useState({
+    userName: "Badr EL HOUARI",
     roomName: "Testing Room",
-    roomID: "zafaz-qfazf-zafa-azfzaf",
-    messages: [
-      {
-          isSent: true,
-          message: "Test 1",
-          date: "23:52 PM"
-      },
-      {
-          isSent: false,
-          message: "Test 1",
-          date: "23:52 PM",
-          pdp: "/a.jpg",
-          name: "Mohammed"
-      },
-      {
-          isSent: true,
-          message: "Test 1",
-          date: "23:52 PM"
-      },
-      {
-          isSent: true,
-          message: "Test 1",
-          date: "23:52 PM"
-      },
-    ],
+    roomID: "",
+    messages: [],
     peers: []
   })
 

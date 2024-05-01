@@ -1,136 +1,178 @@
 "use client";
-import { faCamera,faCircle,faEllipsis,faGear,faMagnifyingGlass,faMicrophone,faMoon,faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faCamera,faCircle,faEllipsis,faPlus, faRotate } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Settings from './Settings'
 import { useState,useEffect,useRef } from 'react';
-
+import Peer from "simple-peer";
 import io from "socket.io-client";
 
 export default function Home({language, settings,setSettings, socketRef, sendChannel, roomInfos, setRoomInfos}) {
 
     const [roomID, setRoomID] = useState("")
+    const peersRef = useRef([]);
 
-    const peerRef = useRef();
-   
-    const otherUser = useRef();
-
-    
     const joinRoom = (e) =>{
       
         socketRef.current.emit("join room", roomID);
+        setRoomInfos({...roomInfos, roomID: roomID})
+        socketRef.current.on('all users', users => {
+            
+            users.forEach(userID => {
 
-        socketRef.current.on('other user', userID => {
-            callUser(userID);
-            otherUser.current = userID;
+                const peer = createPeer(userID, socketRef.current.id)
+                peersRef.current.push({
+                    peerID: userID,
+                    peer,
+                })
+                const newm = roomInfos.peers
+                newm.push({
+                   
+                    id: userID,
+                    profile_picture: "/a.jpg",
+                    name: userID,
+                    peer: peer
+                 
+                 })
+                setRoomInfos(roomInfos => ({
+                    ...roomInfos,
+                    peers: newm
+                }));
+
+            })
+           
+
         });
 
-        socketRef.current.on("user joined", userID => {
-            otherUser.current = userID;
+        socketRef.current.on("user joined", payload => {
+            const peer = addPeer(payload.signal, payload.callerID);
+            peersRef.current.push({
+                peerID: payload.callerID,
+                peer,
+            })
+
+            const newm = roomInfos.peers
+            newm.push({
+                
+                id: payload.callerID,
+                profile_picture: "/a.jpg",
+                name: payload.callerID,
+                peer:peer,
+             
+             })
+            setRoomInfos(roomInfos => ({
+                ...roomInfos,
+                peers: newm
+            }));
+
         });
 
-        socketRef.current.on("offer", handleOffer);
+        socketRef.current.on("receiving returned signal", payload => {
+            const item = peersRef.current.find(p => p.peerID === payload.id);
+            item.peer.signal(payload.signal);
+        });
 
-        socketRef.current.on("answer", handleAnswer);
 
-        socketRef.current.on("ice-candidate", handleNewICECandidateMsg);
         
         setRoomID("")
     }
-   
-    function callUser(userID) {
-        peerRef.current = createPeer(userID);
-        sendChannel.current = peerRef.current.createDataChannel("sendChannel")
-        sendChannel.current.onmessage = handleReceiveMessage;
-    }
-    function handleReceiveMessage(e) {
-        setRoomInfos({...roomInfos,messages: [...roomInfos.messages,{
-            isSent: false,
-            message: e.data,
-            date: "23:52 PM"
-        }]})
-      
-    }
-
-    function createPeer(userID) {
-        const peer = new RTCPeerConnection({
-            iceServers: [
-                {
-                    urls: "stun:stun.stunprotocol.org"
-                },
-                {
-                    urls: 'turn:numb.viagenie.ca',
-                    credential: 'muazkh',
-                    username: 'webrtc@live.com'
-                },
-            ]
+    function createPeer(userToSignal, callerID, stream) {
+        const peer = new Peer({
+            initiator: true,
+            trickle: false,
+            config: {
+                iceServers: [
+                    {
+                        urls: "stun:stun.stunprotocol.org"
+                    },
+               
+                ]
+            }
         });
 
-        peer.onicecandidate = handleICECandidateEvent;
-        peer.onnegotiationneeded = () => handleNegotiationNeededEvent(userID);
+        peer.on("signal", signal => {
+            socketRef.current.emit("sending signal", { userToSignal, callerID, signal })
+        })
+        peer.on('data', data => {
+            const newm = roomInfos.messages
+            console.log(data)
+            const decoder = new TextDecoder();
+        
+            newm.push({
+                isSent: false,
+                message: decoder.decode(data),
+                date: "23:52 PM"
+            })
+          
+    
+            setRoomInfos(roomInfos => ({
+                ...roomInfos,
+                messages: newm
+            }));
+        })
 
         return peer;
     }
 
-    function handleNegotiationNeededEvent(userID) {
-        peerRef.current.createOffer().then(offer => {
-            return peerRef.current.setLocalDescription(offer);
-        }).then(() => {
-            const payload = {
-                target: userID,
-                caller: socketRef.current.id,
-                sdp: peerRef.current.localDescription
-            };
-            socketRef.current.emit("offer", payload);
-        }).catch(e => console.log(e));
-    }
-
-    function handleOffer(incoming) {
-        peerRef.current = createPeer();
-        peerRef.current.ondatachannel = (event) =>{
-            sendChannel.current = event.channel;
-            sendChannel.current.onmessage = handleReceiveMessage
-        }
-        const desc = new RTCSessionDescription(incoming.sdp);
-        peerRef.current.setRemoteDescription(desc).then(() => {
-        }).then(() => {
-            return peerRef.current.createAnswer();
-        }).then(answer => {
-            return peerRef.current.setLocalDescription(answer);
-        }).then(() => {
-            const payload = {
-                target: incoming.caller,
-                caller: socketRef.current.id,
-                sdp: peerRef.current.localDescription
-            }
-            socketRef.current.emit("answer", payload);
+    function addPeer(incomingSignal, callerID, stream) {
+        const peer = new Peer({
+            initiator: false,
+            trickle: false,
+            config: {
+                        iceServers: [
+                            {
+                                urls: "stun:stun.stunprotocol.org"
+                            },
+                       
+                        ]
+                    }
         })
+
+        peer.on("signal", signal => {
+            socketRef.current.emit("returning signal", { signal, callerID })
+        })
+        peer.on('data', data => {
+            const newm = roomInfos.messages
+            const decoder = new TextDecoder();
+       
+            newm.push({
+                isSent: false,
+                message: decoder.decode(data),
+                date: "23:52 PM"
+            })
+          
+    
+            setRoomInfos(roomInfos => ({
+                ...roomInfos,
+                messages: newm
+            }));
+        })
+        peer.signal(incomingSignal);
+
+        return peer;
     }
 
-    function handleAnswer(message) {
-        const desc = new RTCSessionDescription(message.sdp);
-        peerRef.current.setRemoteDescription(desc).catch(e => console.log(e));
+    function handleReceiveMessage(e) {
+    
+        
+        const newm = roomInfos.messages
+       
+        newm.push({
+            isSent: false,
+            message: e.data,
+            date: "23:52 PM"
+        })
+      
+
+        setRoomInfos(roomInfos => ({
+            ...roomInfos,
+            messages: newm
+        }));
+      
+ 
+
     }
 
-    function handleICECandidateEvent(e) {
-        if (e.candidate) {
-            const payload = {
-                target: otherUser.current,
-                candidate: e.candidate,
-            }
-            socketRef.current.emit("ice-candidate", payload);
-        }
-    }
-
-    function handleNewICECandidateMsg(incoming) {
-        const candidate = new RTCIceCandidate(incoming);
-
-        peerRef.current.addIceCandidate(candidate)
-            .catch(e => console.log(e));
-    }
-    function handleChange(e) {
-        setText(e.target.value);
-    }
-
+ 
    
     return (
         <div class="w-1/4 bg-[#fdfdfd] border-[#d8dae0] dark:border-[#3f465a] border-r-[1px] dark:bg-[#1a202c]">
@@ -146,18 +188,24 @@ export default function Home({language, settings,setSettings, socketRef, sendCha
         </div>
      
         <div class="h-14 bg-[#f1f2f4] flex items-center justify-center border-b-[1px] dark:bg-[#262d3b] dark:border-[#3f465a]">
-            <div class=" bg-white h-8 rounded-2xl px-5 flex items-center gap-3 w-full mx-7 dark:bg-[#3e4457]">
-                <FontAwesomeIcon icon={faPlus} size="lg" className="text-center dark:text-gray-200 cursor-pointer" onClick={() => joinRoom()}/>
-                <i class="fa-solid fa-magnifying-glass text-center"></i>
-                <input type="text" class="text-gray-700 outline-none dark:bg-[#3e4457] dark:text-gray-200" placeholder={language.search_text} onChange={(e) => setRoom(e.target.value)}/>
+            <div class=" bg-white h-8 rounded-2xl px-5 flex items-center justify-between gap-3 w-full mx-7 dark:bg-[#3e4457]">
+            <div class="flex items-center gap-5">
+            <FontAwesomeIcon icon={faPlus} size="lg" className="text-center dark:text-gray-200 cursor-pointer" onClick={() => joinRoom()}/>
+               
+               <input type="text" class="text-gray-700 outline-none dark:bg-[#3e4457] dark:text-gray-200" placeholder={language.search_text} onChange={(e) => setRoomID(e.target.value)} value={roomID}/>
+            </div>
 
+               
+                <FontAwesomeIcon icon={faRotate} size="lg" className="text-center dark:text-gray-200 cursor-pointer" onClick={() => joinRoom()}/>
             </div>
         </div>
      
-        <div class="">  
+        <div class="items-center">  
+            <h2 className='text-gray-600 text-lg ml-3 my-3 font-semibold dark:text-gray-200'>Online peers:</h2>
+         
             {roomInfos.peers.map((peer)=>{
                 return (
-                    <div class="bg-[#e6f2fa] cursor-pointer dark:hover:bg-[#272b3a] dark:bg-[#313648] border-[#d8dae0] dark:border-[#3f465a] border-b-[1px] h-24 flex items-center justify-between">
+                    <div class="bg-[#e6f2fa] dark:hover:bg-[#272b3a] dark:bg-[#313648] border-[#d8dae0] dark:border-[#3f465a] border-b-[1px] h-24 flex items-center justify-between">
                         <div class="flex items-center">
                             <div class="mx-4">
                                 <img src={peer.profile_picture} alt="" class="w-16 rounded-2xl"/>
@@ -175,7 +223,18 @@ export default function Home({language, settings,setSettings, socketRef, sendCha
                 </div>
                 )
             })}
-         
+             {roomInfos.roomID != ""  && (
+                <div class="w-full  flex flex-col items-center mt-10">
+                    <div class=" inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-surface motion-reduce:animate-[spin_1.5s_linear_infinite] dark:text-white" role="status">
+                        <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">Loading...</span>
+                        
+
+                    </div>    
+                    <p class="text-gray-800  dark:text-gray-400 mt-2">Looking for more peers ...</p>        
+                </div>
+
+               
+            )}
 
             
     

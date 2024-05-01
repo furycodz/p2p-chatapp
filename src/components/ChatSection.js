@@ -12,14 +12,33 @@ export default function ChatSection({sendChannel,roomInfos,setRoomInfos}) {
     const handleSubmit = (e) =>{
         if (e.key === 'Enter' && text.length != 0 && text != " ") {
             
-            const a =   {
+            // const a =   {
+            //     isSent: true,
+            //     message: text,
+            //     date: "23:52 PM"
+                
+            // }
+            roomInfos.peers.forEach(p => {
+                p.peer.send(text)
+            });
+
+            const newm = roomInfos.messages
+       
+            newm.push({
                 isSent: true,
                 message: text,
                 date: "23:52 PM"
-                
-            }
-            sendChannel.current.send(text)
-            setRoomInfos({...roomInfos,messages: [...roomInfos.messages, a]})
+            })
+          
+    
+            setRoomInfos(roomInfos => ({
+                ...roomInfos,
+                messages: newm
+            }));
+          
+
+            // setRoomInfos({...roomInfos,messages: [...roomInfos.messages, a]})
+       
             setText("")
           }
     }
@@ -30,13 +49,10 @@ export default function ChatSection({sendChannel,roomInfos,setRoomInfos}) {
 
             <div class="h-24 bg-[#fdfdfd] border-[#d8dae0] dark:border-[#3f465a] border-b-[1px] p-10 flex items-center dark:bg-[#1a202c] justify-between">
                 <div class="flex items-center gap-4 ">
+                    
                     <div>
-                   
-                        <img src="/a.jpg" alt="" class="w-12 rounded-3xl"/>
-                    </div>
-                    <div>
-                        <p class="font-bold dark:text-gray-200">{roomInfos.roomName}</p>
-                        <p class="text-gray-500 text-xs text">{roomInfos.roomID}</p>
+                        {/* <p class="font-bold dark:text-gray-200">{roomInfos.roomName}</p> */}
+                        <p class="font-bold dark:text-gray-200">Room: <span className=' dark:text-gray-400 text-sm'>{roomInfos.roomID}</span></p>
                     </div>
                     
                   

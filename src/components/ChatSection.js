@@ -1,5 +1,5 @@
 "use client";
-import { faCamera,faMicrophone,faPhone,faPlus, faVideo } from '@fortawesome/free-solid-svg-icons'
+import { faCamera,faClipboard,faMicrophone,faPaste,faPhone,faPlus, faVideo } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Romanesco } from 'next/font/google';
 import { useState,useEffect } from 'react';
@@ -19,7 +19,7 @@ export default function ChatSection({sendChannel,roomInfos,setRoomInfos}) {
                 
             // }
             roomInfos.peers.forEach(p => {
-                p.peer.send(text)
+                p.peer.send(roomInfos.userName+"::/::"+text)
             });
 
             const newm = roomInfos.messages
@@ -52,10 +52,10 @@ export default function ChatSection({sendChannel,roomInfos,setRoomInfos}) {
                     
                     <div>
                         {/* <p class="font-bold dark:text-gray-200">{roomInfos.roomName}</p> */}
-                        <p class="font-bold dark:text-gray-200">Room: <span className=' dark:text-gray-400 text-sm'>{roomInfos.roomID}</span></p>
+                        <p class="font-bold dark:text-gray-200">Room: {roomInfos.roomID.length == 0 ? <span className=' dark:text-gray-400 text-sm'>Not connected</span>: <span className=' dark:text-gray-400 text-sm'>{roomInfos.roomID} <FontAwesomeIcon size="lg" icon={faPaste} className="dark:text-gray-500 cursor-pointer ml-2" onClick={() => {navigator.clipboard.writeText(roomInfos.roomID)}}/></span>}</p>
                     </div>
                     
-                  
+                    
                 </div>
                 <div className='flex gap-4'>
                 <FontAwesomeIcon size="lg" icon={faPhone} className="dark:text-gray-200 cursor-pointer"/>

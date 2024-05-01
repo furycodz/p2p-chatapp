@@ -5,6 +5,8 @@ import ChatSection from "../components/ChatSection"
 import { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import Peer from "simple-peer";
+import { generateUsername } from "unique-username-generator";
+
 export default function Home() {
 
   const socketRef = useRef();
@@ -15,8 +17,7 @@ export default function Home() {
   })
 
   const [roomInfos, setRoomInfos] = useState({
-    userName: "Badr EL HOUARI",
-    roomName: "Testing Room",
+    userName: "",
     roomID: "",
     messages: [],
     peers: []
@@ -68,8 +69,11 @@ export default function Home() {
      
       }
       socketRef.current = io.connect("http://localhost:8000");
- 
-
+      setRoomInfos(roomInfos => ({
+        ...roomInfos,
+        userName: generateUsername("", 4)
+    }));
+      
     }
   }, []);
 

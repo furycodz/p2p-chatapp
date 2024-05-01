@@ -33,7 +33,7 @@ export default function ChatSection({language, settings, setSettings}) {
             <h2 className="font-bold w-full border-b-[1px] border-gray-400 mb-4 py-2 text-lg ">Settings</h2>
             <div class="flex justify-between items-center gap-7">
                 <div class="flex gap-5">
-                    <FontAwesomeIcon icon={faMoon} size="xl" className="text-[#1786d8] cursor-pointer p-3 bg-gray-100 rounded-lg " />
+                    <FontAwesomeIcon icon={faPlus} size="xl" className="text-[#1786d8]  p-3 bg-gray-100 rounded-lg " />
                     <div>
                         <h2 className="font-bold text-[#1d425d]" >Dark mode</h2>
                         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
@@ -50,7 +50,7 @@ export default function ChatSection({language, settings, setSettings}) {
             </div>
             <div class="flex justify-between items-center gap-7">
                 <div class="flex gap-5">
-                <FontAwesomeIcon icon={faMoon} size="xl" className="text-[#1786d8] cursor-pointer p-3 bg-gray-100 rounded-lg " />
+                <FontAwesomeIcon icon={faPlus} size="xl" className="text-[#1786d8]  p-3 bg-gray-100 rounded-lg " />
                 <div>
                     <h2 className="font-bold text-[#1d425d]" >Language</h2>
                     <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>

@@ -5,13 +5,18 @@ import Settings from './Settings'
 import { useState,useEffect,useRef } from 'react';
 import Peer from "simple-peer";
 import io from "socket.io-client";
+import { v1 as uuid } from 'uuid';
 
 export default function Home({language, settings,setSettings, socketRef, sendChannel, roomInfos, setRoomInfos}) {
 
     const [roomID, setRoomID] = useState("")
     const peersRef = useRef([]);
 
-    const joinRoom = (e) =>{
+    const randomRoomID = () => {
+        setRoomID(uuid().slice(0,23))
+    }
+
+    const joinRoom = () =>{
       
         socketRef.current.emit("join room", roomID);
         setRoomInfos({...roomInfos, roomID: roomID})
@@ -96,10 +101,11 @@ export default function Home({language, settings,setSettings, socketRef, sendCha
             const newm = roomInfos.messages
             console.log(data)
             const decoder = new TextDecoder();
-        
+            const msg = decoder.decode(data).split("::/::")
             newm.push({
+                name: msg[0],
                 isSent: false,
-                message: decoder.decode(data),
+                message: msg[1],
                 date: "23:52 PM"
             })
           
@@ -133,10 +139,11 @@ export default function Home({language, settings,setSettings, socketRef, sendCha
         peer.on('data', data => {
             const newm = roomInfos.messages
             const decoder = new TextDecoder();
-       
+            const msg = decoder.decode(data).split("::/::")
             newm.push({
+                name: msg[0],
                 isSent: false,
-                message: decoder.decode(data),
+                message: msg[1],
                 date: "23:52 PM"
             })
           
@@ -151,26 +158,6 @@ export default function Home({language, settings,setSettings, socketRef, sendCha
         return peer;
     }
 
-    function handleReceiveMessage(e) {
-    
-        
-        const newm = roomInfos.messages
-       
-        newm.push({
-            isSent: false,
-            message: e.data,
-            date: "23:52 PM"
-        })
-      
-
-        setRoomInfos(roomInfos => ({
-            ...roomInfos,
-            messages: newm
-        }));
-      
- 
-
-    }
 
  
    
@@ -180,7 +167,7 @@ export default function Home({language, settings,setSettings, socketRef, sendCha
         <div class="h-24 bg-[#fdfdfd] border-[#d8dae0] border-b-[1px] flex items-center justify-between px-4 dark:bg-[#1a202c] dark:border-[#3f465a]">
             <div class="flex items-center gap-5">
                 <img src="/b.jpg" alt="" class="w-16 rounded-2xl"/>
-                <p class="font-bold text-lg text-gray-800 dark:text-gray-200">Badr EL HOUARI</p>
+                <p class="font-bold text-lg text-gray-800 dark:text-gray-200">{roomInfos.userName}</p>
             </div>
             <Settings settings={settings} setSettings={setSettings} language={language}/>
             
@@ -189,14 +176,11 @@ export default function Home({language, settings,setSettings, socketRef, sendCha
      
         <div class="h-14 bg-[#f1f2f4] flex items-center justify-center border-b-[1px] dark:bg-[#262d3b] dark:border-[#3f465a]">
             <div class=" bg-white h-8 rounded-2xl px-5 flex items-center justify-between gap-3 w-full mx-7 dark:bg-[#3e4457]">
-            <div class="flex items-center gap-5">
-            <FontAwesomeIcon icon={faPlus} size="lg" className="text-center dark:text-gray-200 cursor-pointer" onClick={() => joinRoom()}/>
-               
-               <input type="text" class="text-gray-700 outline-none dark:bg-[#3e4457] dark:text-gray-200" placeholder={language.search_text} onChange={(e) => setRoomID(e.target.value)} value={roomID}/>
+            <div class="flex items-center gap-5 w-full">
+                <FontAwesomeIcon icon={faPlus} size="lg" className="text-center dark:text-gray-200 cursor-pointer" onClick={() => joinRoom()}/>
+                <input type="text" class="text-gray-700 outline-none dark:bg-[#3e4457] dark:text-gray-200 w-full" placeholder={language.search_text} onChange={(e) => setRoomID(e.target.value)} value={roomID}/>
             </div>
-
-               
-                <FontAwesomeIcon icon={faRotate} size="lg" className="text-center dark:text-gray-200 cursor-pointer" onClick={() => joinRoom()}/>
+            <FontAwesomeIcon icon={faRotate} size="lg" className="text-center dark:text-gray-200 cursor-pointer" onClick={() => randomRoomID()}/>
             </div>
         </div>
      

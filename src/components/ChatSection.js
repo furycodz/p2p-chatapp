@@ -3,12 +3,39 @@ import { faCamera,faClipboard,faMicrophone,faPaste,faPhone,faPlus, faVideo } fro
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Romanesco } from 'next/font/google';
 import { useState,useEffect } from 'react';
-
+import { useFilePicker, FileAmountLimitValidator } from 'use-file-picker';
 
 
 export default function ChatSection({roomInfos,setRoomInfos, settings}) {
     const [text,setText] = useState("")
+
+    const { openFilePicker, filesContent, loading } = useFilePicker({
+        multiple: false,
+        onFilesSuccessfullySelected: ({ plainFiles, filesContent }) => {
+          
+            const newm = roomInfos.messages
+            const date = new Date()
+            newm.push({
+                type: "img",
+                isSent: true,
+                imgContent: URL.createObjectURL(plainFiles[0]),
+                date: date.getHours() + ":" + date.getMinutes()
+            })
+          
     
+            setRoomInfos(roomInfos => ({
+                ...roomInfos,
+                messages: newm
+            }));
+           
+          }
+    });
+
+    const handleFileSubmit = () => {
+        openFilePicker()
+    
+    }
+
     const handleSubmit = (e) =>{
         if (e.key === 'Enter' && text.length != 0 && text != " ") {
             
@@ -25,6 +52,7 @@ export default function ChatSection({roomInfos,setRoomInfos, settings}) {
             const newm = roomInfos.messages
             const date = new Date()
             newm.push({
+                type: "msg",
                 isSent: true,
                 message: text,
                 date: date.getHours() + ":" + date.getMinutes()
@@ -65,31 +93,54 @@ export default function ChatSection({roomInfos,setRoomInfos, settings}) {
             </div>
          
             <div class="mx-9 flex flex-col  ">
-                {roomInfos.messages.map((message)=>{
-                    
-                    if (message.isSent) {
-                        return(
-                            <div class="send-container w-fit self-end my-2">
-                                <p class="bg-[#f1f2f4] w-fit py-[0.35rem] px-5 rounded-2xl text-[0.92rem]">{message.message}</p>
-                                <p class="text-gray-500 text-xs text-right">{message.date}</p>
-                            </div>
-                        )
-                    }else{
-                        return(
-                            <div class="rec-container flex gap-3 my-3">
-                                <img src={message.pdp} alt="" class="w-12 h-12 rounded-full shadow-lg"/>
-                                <div>
-                                    <p class="text-gray-500 text-sm text-left">{message.name} • {message.date}</p>
-                                    <p class="bg-[#1786d8] shadow-md w-fit py-[0.35rem] px-5 rounded-2xl text-[0.92rem] text-white">{message.message}</p>
+                {roomInfos.messages.map((message, index)=>{
+                    if(message.type == "msg"){
+                        if (message.isSent) {
+                            return(
+                                <div class="send-container w-fit self-end my-2" key={index}>
+                                    <p class="bg-[#f1f2f4] w-fit py-[0.35rem] px-5 rounded-2xl text-[0.92rem]">{message.message}</p>
+                                    <p class="text-gray-500 text-xs text-right">{message.date}</p>
                                 </div>
-                            </div>
-                        )
+                            )
+                        }else{
+                            return(
+                                <div class="rec-container flex gap-3 my-3" key={index}>
+                                    <img src={message.pdp} alt="" class="w-12 h-12 rounded-full shadow-lg"/>
+                                    <div>
+                                        <p class="text-gray-500 text-sm text-left">{message.name} • {message.date}</p>
+                                        <p class="bg-[#1786d8] shadow-md w-fit py-[0.35rem] px-5 rounded-2xl text-[0.92rem] text-white">{message.message}</p>
+                                    </div>
+                                </div>
+                            )
+                        }
+                    }else if(message.type = "img"){
+                        if (message.isSent){
+                            return(
+                                <div class="self-end mt-2" key={index}>
+                                    <img src={message.imgContent} alt="" class="max-w-[300px] max-h-[300px] rounded-lg shadow-lg"/>
+                                    
+                                    <p class="text-gray-500 text-xs text-right">{message.date}</p>
+                                      
+                                </div>
+                            )
+                        }else{
+                            return(
+                                <div class="flex" key={index}>
+                                    <img src={message.imgContent} alt="" class="max-w-20 rounded-lg shadow-2xl"/>
+                                    <p class="text-gray-500 text-xs text-right">{message.date}</p>
+                                </div>
+                            )
+                        }
                     }
+
+                
                 })}
             </div>
          
             <div class="absolute bottom-0 left-0 h-28 w-full  dark:border-[#3f465a] border-[#d8dae0] border-t-[1px] flex items-center justify-between p-10">
-                <FontAwesomeIcon icon={faPlus} size="lg" className="text-[#1786d8] bg-[#f1f2f4] p-4 rounded-3xl dark:bg-[#262d3b]"/>
+              
+                <FontAwesomeIcon icon={faPlus} size="lg" className="text-[#1786d8] bg-[#f1f2f4] p-4 rounded-3xl dark:bg-[#262d3b] cursor-pointer" onClick={() => openFilePicker()}/>
+
                 {/* <i class="fa-solid fa-plus text-[#1786d8] bg-[#f1f2f4] p-4 rounded-3xl" ></i> */}
                 <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => {handleSubmit(e)}} type="text" class="w-[88%] h-12 rounded-3xl bg-[#f1f2f4] text-gray-700 outline-none px-6 dark:bg-[#262d3b] dark:text-white" placeholder="Type a message ...."/>
                 {/* <i class="fa-solid fa-microphone text-[24px]"></i>

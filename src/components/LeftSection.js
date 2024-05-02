@@ -17,7 +17,11 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
     const randomRoomID = () => {
         setRoomID(uuid().slice(0,23))
     }
-
+    const playNotificationSound = () =>{
+        if(settings.notificationSound){
+            playSound()
+        }
+    }
     const joinRoom = () =>{
       
         socketRef.current.emit("join room", roomID);
@@ -106,6 +110,7 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
             const msg = decoder.decode(data).split("::/::")
             const date = new Date()
             newm.push({
+                type: "msg",
                 pdp: msg[0],
                 name: msg[1],
                 isSent: false,
@@ -118,9 +123,7 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
                 ...roomInfos,
                 messages: newm
             }));
-            if(settings.notificationSound){
-                playSound()
-            } 
+            playNotificationSound()
         })
 
         return peer;
@@ -149,6 +152,7 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
             const msg = decoder.decode(data).split("::/::")
             const date = new Date()
             newm.push({
+                type: "msg",
                 pdp: msg[0],
                 name: msg[1],
                 isSent: false,
@@ -161,9 +165,7 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
                 ...roomInfos,
                 messages: newm
             }));
-            if(settings.notificationSound){
-                playSound()
-            } 
+            playNotificationSound()
           
         })
         peer.signal(incomingSignal);

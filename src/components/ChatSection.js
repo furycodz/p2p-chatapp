@@ -6,7 +6,7 @@ import { useState,useEffect } from 'react';
 
 
 
-export default function ChatSection({sendChannel,roomInfos,setRoomInfos}) {
+export default function ChatSection({roomInfos,setRoomInfos, settings}) {
     const [text,setText] = useState("")
     
     const handleSubmit = (e) =>{
@@ -19,15 +19,15 @@ export default function ChatSection({sendChannel,roomInfos,setRoomInfos}) {
                 
             // }
             roomInfos.peers.forEach(p => {
-                p.peer.send(roomInfos.userName+"::/::"+text)
+                p.peer.send(settings.profilePicture+"::/::"+settings.userName+"::/::"+text)
             });
 
             const newm = roomInfos.messages
-       
+            const date = new Date()
             newm.push({
                 isSent: true,
                 message: text,
-                date: "23:52 PM"
+                date: date.getHours() + ":" + date.getMinutes()
             })
           
     
@@ -52,7 +52,7 @@ export default function ChatSection({sendChannel,roomInfos,setRoomInfos}) {
                     
                     <div>
                         {/* <p class="font-bold dark:text-gray-200">{roomInfos.roomName}</p> */}
-                        <p class="font-bold dark:text-gray-200">Room: {roomInfos.roomID.length == 0 ? <span className=' dark:text-gray-400 text-sm'>Not connected</span>: <span className=' dark:text-gray-400 text-sm'>{roomInfos.roomID} <FontAwesomeIcon size="lg" icon={faPaste} className="dark:text-gray-500 cursor-pointer ml-2" onClick={() => {navigator.clipboard.writeText(roomInfos.roomID)}}/></span>}</p>
+                        <p class="font-bold dark:text-gray-200">Room: {roomInfos.roomID.length == 0 ? <span className=' dark:text-gray-400 text-sm'>Not connected</span>: <span className=' dark:text-gray-400 text-sm'>{roomInfos.roomID} <FontAwesomeIcon size="lg" icon={faPaste} className="dark:text-gray-500 cursor-pointer ml-2 hover:text-black" onClick={() => {navigator.clipboard.writeText(roomInfos.roomID)}}/></span>}</p>
                     </div>
                     
                     
@@ -77,7 +77,7 @@ export default function ChatSection({sendChannel,roomInfos,setRoomInfos}) {
                     }else{
                         return(
                             <div class="rec-container flex gap-3 my-3">
-                                <img src={message.pdp} alt="" class="w-12 rounded-xl shadow-lg"/>
+                                <img src={message.pdp} alt="" class="w-12 h-12 rounded-full shadow-lg"/>
                                 <div>
                                     <p class="text-gray-500 text-sm text-left">{message.name} • {message.date}</p>
                                     <p class="bg-[#1786d8] shadow-md w-fit py-[0.35rem] px-5 rounded-2xl text-[0.92rem] text-white">{message.message}</p>

@@ -28,17 +28,46 @@ export default function ChatSection({language, settings, setSettings}) {
           
               
         <FontAwesomeIcon icon={faGear} size="lg" className="text-gray-800 cursor-pointer dark:text-gray-200" onClick={() => setIsOpen(true)}/>
-        <Modal isOpen={isOpen} onRequestClose={() => setIsOpen(false)} style={customStyles}> 
+        <Modal className="" isOpen={isOpen} onRequestClose={() => setIsOpen(false)} style={customStyles}> 
         <div className="rounded-3xl flex flex-col gap-y-4">
             <h2 className="font-bold w-full border-b-[1px] border-gray-400 mb-4 py-2 text-lg ">Settings</h2>
             <div class="flex justify-between items-center gap-7">
-                <div class="flex gap-5">
+                <div class="flex gap-5 items-center">
                     <FontAwesomeIcon icon={faPlus} size="xl" className="text-[#1786d8]  p-3 bg-gray-100 rounded-lg " />
-                    <div>
+                   
+                        <h2 className="font-bold text-[#1d425d]" >Username</h2>
+                       
+                  
+                </div>
+               
+                
+                <input value={settings.userName} onChange={(e) => {setSettings({...settings, userName: e.target.value})}} type="text" class="w-[60%] h-12 rounded-xl bg-[#e6e6e6] text-gray-700 outline-none px-6 " placeholder="Enter your username"/>
+                
+              
+            </div>
+            <div class="flex justify-between items-center gap-7">
+                <div class="flex gap-5 items-center">
+                    <FontAwesomeIcon icon={faPlus} size="xl" className="text-[#1786d8]  p-3 bg-gray-100 rounded-lg " />
+                   
+                        <h2 className="font-bold text-[#1d425d] w-fit whitespace-nowrap" >Profile Picture</h2>
+                       
+                  
+                </div>
+               
+                
+                <input  onChange={(e) => setSettings({...settings, profilePicture: e.target.value})} value={settings.profilePicture} type="text" class="lg:w-[400px] h-12 rounded-xl bg-[#e6e6e6] text-gray-700 outline-none px-6 " placeholder="Enter your profile picture link"/>
+                
+              
+            </div>
+            
+            <div class="flex justify-between items-center gap-7">
+                <div class="flex gap-5 items-center">
+                    <FontAwesomeIcon icon={faPlus} size="xl" className="text-[#1786d8]  p-3 bg-gray-100 rounded-lg " />
+                    
                         <h2 className="font-bold text-[#1d425d]" >Dark mode</h2>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+                      
                         
-                    </div>
+                    
                 </div>
                
                 <label class="switch">
@@ -49,13 +78,42 @@ export default function ChatSection({language, settings, setSettings}) {
               
             </div>
             <div class="flex justify-between items-center gap-7">
-                <div class="flex gap-5">
-                <FontAwesomeIcon icon={faPlus} size="xl" className="text-[#1786d8]  p-3 bg-gray-100 rounded-lg " />
-                <div>
-                    <h2 className="font-bold text-[#1d425d]" >Language</h2>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+                <div class="flex gap-5 items-center">
+                    <FontAwesomeIcon icon={faPlus} size="xl" className="text-[#1786d8]  p-3 bg-gray-100 rounded-lg " />
+                 
+                        <h2 className="font-bold text-[#1d425d]" >Notifications</h2>
+                        
+                        
                     
                 </div>
+               
+                <label class="switch">
+                    <input type="checkbox" onClick={(e) => {setSettings({...settings, notifications: !settings.notifications})}} defaultChecked={settings.notifications}/>
+                    <span class="slider round"></span>
+                </label>
+           
+              
+            </div>
+            <div class="flex justify-between items-center gap-7">
+                <div class="flex gap-5 items-center">
+                    <FontAwesomeIcon icon={faPlus} size="xl" className="text-[#1786d8]  p-3 bg-gray-100 rounded-lg " />
+                        <h2 className="font-bold text-[#1d425d]" >Message Sound</h2>
+                        
+                </div>
+               
+                <label class="switch">
+                    <input type="checkbox" onClick={(e) => {setSettings({...settings, notificationSound: !settings.notificationSound})}} defaultChecked={settings.notificationSound}/>
+                    <span class="slider round"></span>
+                </label>
+           
+              
+            </div>
+
+            <div class="flex justify-between items-center gap-7">
+                <div class="flex gap-5 items-center">
+                <FontAwesomeIcon icon={faPlus} size="xl" className="text-[#1786d8]  p-3 bg-gray-100 rounded-lg " />
+                    <h2 className="font-bold text-[#1d425d]" >Language</h2>
+                    
                 </div>
                 
                 <div class="relative h-10 w-32 ">

@@ -10,14 +10,19 @@ import { generateUsername } from "unique-username-generator";
 export default function Home() {
 
   const socketRef = useRef();
-  const sendChannel = useRef([]);
+
   const [settings,setSettings] = useState({
     darkmode: true,
-    lang: 'en'
+    lang: 'en',
+    notificationSound: true,
+    notifications: true,
+    userName: "",
+    profilePicture: "/user.jpg",
+
   })
 
   const [roomInfos, setRoomInfos] = useState({
-    userName: "",
+    
     roomID: "",
     messages: [],
     peers: []
@@ -69,10 +74,8 @@ export default function Home() {
      
       }
       socketRef.current = io.connect("http://localhost:8000");
-      setRoomInfos(roomInfos => ({
-        ...roomInfos,
-        userName: generateUsername("", 4)
-    }));
+     
+     
       
     }
   }, []);
@@ -104,9 +107,9 @@ export default function Home() {
   return (
     <main className="flex h-screen">
      
-         <LeftSection language={language[settings.lang]} settings={settings} setSettings={setSettings} socketRef={socketRef}  sendChannel={sendChannel} roomInfos={roomInfos} setRoomInfos={setRoomInfos} />
+         <LeftSection language={language[settings.lang]} settings={settings} setSettings={setSettings} socketRef={socketRef} roomInfos={roomInfos} setRoomInfos={setRoomInfos} />
       
-        <ChatSection language={language[settings.lang]} sendChannel={sendChannel} roomInfos={roomInfos} setRoomInfos={setRoomInfos}/> 
+        <ChatSection language={language[settings.lang]} roomInfos={roomInfos} setRoomInfos={setRoomInfos} settings={settings}/> 
     </main>
   );
 }

@@ -4,13 +4,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Settings from './Settings'
 import { useState,useEffect,useRef } from 'react';
 import Peer from "simple-peer";
-import io from "socket.io-client";
+import useSound from 'use-sound'
+// import mySound from '../../public/notif_sound.mp3'
 import { v1 as uuid } from 'uuid';
 
-export default function Home({language, settings,setSettings, socketRef, sendChannel, roomInfos, setRoomInfos}) {
+export default function Home({language, settings,setSettings, socketRef, roomInfos, setRoomInfos}) {
 
     const [roomID, setRoomID] = useState("")
     const peersRef = useRef([]);
+    const [playSound] = useSound("/notif_sound.mp3")
 
     const randomRoomID = () => {
         setRoomID(uuid().slice(0,23))
@@ -102,11 +104,13 @@ export default function Home({language, settings,setSettings, socketRef, sendCha
             console.log(data)
             const decoder = new TextDecoder();
             const msg = decoder.decode(data).split("::/::")
+            const date = new Date()
             newm.push({
-                name: msg[0],
+                pdp: msg[0],
+                name: msg[1],
                 isSent: false,
-                message: msg[1],
-                date: "23:52 PM"
+                message: msg[2],
+                date: date.getHours() + ":" + date.getMinutes()
             })
           
     
@@ -114,6 +118,9 @@ export default function Home({language, settings,setSettings, socketRef, sendCha
                 ...roomInfos,
                 messages: newm
             }));
+            if(settings.notificationSound){
+                playSound()
+            } 
         })
 
         return peer;
@@ -140,11 +147,13 @@ export default function Home({language, settings,setSettings, socketRef, sendCha
             const newm = roomInfos.messages
             const decoder = new TextDecoder();
             const msg = decoder.decode(data).split("::/::")
+            const date = new Date()
             newm.push({
-                name: msg[0],
+                pdp: msg[0],
+                name: msg[1],
                 isSent: false,
-                message: msg[1],
-                date: "23:52 PM"
+                message: msg[2],
+                date: date.getHours() + ":" + date.getMinutes()
             })
           
     
@@ -152,6 +161,10 @@ export default function Home({language, settings,setSettings, socketRef, sendCha
                 ...roomInfos,
                 messages: newm
             }));
+            if(settings.notificationSound){
+                playSound()
+            } 
+          
         })
         peer.signal(incomingSignal);
 
@@ -166,8 +179,8 @@ export default function Home({language, settings,setSettings, socketRef, sendCha
     
         <div class="h-24 bg-[#fdfdfd] border-[#d8dae0] border-b-[1px] flex items-center justify-between px-4 dark:bg-[#1a202c] dark:border-[#3f465a]">
             <div class="flex items-center gap-5">
-                <img src="/b.jpg" alt="" class="w-16 rounded-2xl"/>
-                <p class="font-bold text-lg text-gray-800 dark:text-gray-200">{roomInfos.userName}</p>
+                <img src={settings.profilePicture} alt="" class="w-16 h-16 rounded-full"/>
+                <p class="font-bold text-lg text-gray-800 dark:text-gray-200">{settings.userName}</p>
             </div>
             <Settings settings={settings} setSettings={setSettings} language={language}/>
             

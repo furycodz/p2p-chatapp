@@ -104,26 +104,62 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
             socketRef.current.emit("sending signal", { userToSignal, callerID, signal })
         })
         peer.on('data', data => {
+            console.log(JSON.parse(data.toString()))
+            console.log(roomInfos)
+
+            
+            // const blob = new Blob([jsondata.imgSrc]);
+            //     const url = URL.createObjectURL(blob);
+            //     const link = document.createElement('a');
+            //     link.href = url;
+            //     link.download = jsondata.fileName;
+            //     link.click();
+            //     URL.revokeObjectURL(url);
+
+            // const jsondata = JSON.parse(data.toString())
+            // const newm = roomInfos.messages
+            const jsondata = JSON.parse(data.toString())
             const newm = roomInfos.messages
-            console.log(data)
-            const decoder = new TextDecoder();
-            const msg = decoder.decode(data).split("::/::")
             const date = new Date()
-            newm.push({
-                type: "msg",
-                pdp: msg[0],
-                name: msg[1],
-                isSent: false,
-                message: msg[2],
-                date: date.getHours() + ":" + date.getMinutes()
-            })
+            if(jsondata.type == "img"){
+               
+                newm.push({
+                    type: "img",
+                    pdp: jsondata.pdp,
+                    name: jsondata.userName,
+                    isSent: false,
+                    imgContent: jsondata.imgSrc,
+                    date: date.getHours() + ":" + date.getMinutes()
+                })
+            }else if(jsondata.type == "msg"){
+                newm.push({
+                    type: "msg",
+                    pdp: jsondata.pdp,
+                    name: jsondata.userName,
+                    isSent: false,
+                    message: jsondata.message,
+                    date: date.getHours() + ":" + date.getMinutes()
+                })
+            }else if(jsondata.type == "file"){
+                newm.push({
+                    type: "file",
+                    pdp: jsondata.pdp,
+                    name: jsondata.userName,
+                    isSent: false,
+                    src: jsondata.src,
+                    fileName: jsondata.fileName,
+                    fileSize: jsondata.fileSize,
+                    date: date.getHours() + ":" + date.getMinutes()
+                })
+            }
+            
           
     
             setRoomInfos(roomInfos => ({
                 ...roomInfos,
                 messages: newm
             }));
-            playNotificationSound()
+            // playNotificationSound()
         })
 
         return peer;
@@ -147,26 +183,78 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
             socketRef.current.emit("returning signal", { signal, callerID })
         })
         peer.on('data', data => {
-            const newm = roomInfos.messages
-            const decoder = new TextDecoder();
-            const msg = decoder.decode(data).split("::/::")
-            const date = new Date()
-            newm.push({
-                type: "msg",
-                pdp: msg[0],
-                name: msg[1],
-                isSent: false,
-                message: msg[2],
-                date: date.getHours() + ":" + date.getMinutes()
-            })
+            // const jsondata = JSON.parse(data.toString())
+//             let uint8Array = new TextEncoder('utf-8').encode(jsondata.imgSrc);
+// let arrayBuffer = uint8Array.buffer;
+
+//             const blob = new Blob([arrayBuffer]);
+//             const url = URL.createObjectURL(blob);
+//             const link = document.createElement('a');
+//             link.href = url;
+//             link.download = jsondata.fileName;
+//             link.click();
+//             URL.revokeObjectURL(url);
+            // const jsondata = JSON.parse(data.toString())
+            // const newm = roomInfos.messages
           
+            // const date = new Date()
+            // if(jsondata.type = "msg"){
+            //     newm.push({
+            //         type: "msg",
+            //         pdp: jsondata.pdp,
+            //         name: jsondata.userName,
+            //         isSent: false,
+            //         message: jsondata.message,
+            //         date: date.getHours() + ":" + date.getMinutes()
+            //     })
+            // }
+            
+            console.log(roomInfos)
     
+            // setRoomInfos(roomInfos => ({
+            //     ...roomInfos,
+            //     messages: newm
+            // }));
+            // playNotificationSound()
+            const jsondata = JSON.parse(data.toString())
+            const newm = roomInfos.messages
+            const date = new Date()
+            if(jsondata.type == "img"){
+                newm.push({
+                    type: "img",
+                    pdp: jsondata.pdp,
+                    name: jsondata.userName,
+                    isSent: false,
+                    imgContent: jsondata.imgSrc,
+                    date: date.getHours() + ":" + date.getMinutes()
+                })
+            }else if(jsondata.type == "msg"){
+                newm.push({
+                    type: "msg",
+                    pdp: jsondata.pdp,
+                    name: jsondata.userName,
+                    isSent: false,
+                    message: jsondata.message,
+                    date: date.getHours() + ":" + date.getMinutes()
+                })
+            }else if(jsondata.type == "file"){
+                newm.push({
+                    type: "file",
+                    pdp: jsondata.pdp,
+                    name: jsondata.userName,
+                    isSent: false,
+                    src: jsondata.src,
+                    fileName: jsondata.fileName,
+                    fileSize: jsondata.fileSize,
+                    date: date.getHours() + ":" + date.getMinutes()
+                })
+            }
+            
             setRoomInfos(roomInfos => ({
                 ...roomInfos,
                 messages: newm
             }));
-            playNotificationSound()
-          
+            
         })
         peer.signal(incomingSignal);
 

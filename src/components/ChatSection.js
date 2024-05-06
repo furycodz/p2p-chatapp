@@ -1,32 +1,153 @@
 "use client";
-import { faCamera,faClipboard,faMicrophone,faPaste,faPhone,faPlus, faVideo } from '@fortawesome/free-solid-svg-icons'
+import { faCamera,faClipboard,faDownload,faFile,faMicrophone,faPaste,faPhone,faPlus, faVideo } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Romanesco } from 'next/font/google';
 import { useState,useEffect } from 'react';
 import { useFilePicker, FileAmountLimitValidator } from 'use-file-picker';
+import Image from './messages/Image';
 
 
 export default function ChatSection({roomInfos,setRoomInfos, settings}) {
     const [text,setText] = useState("")
+    const [fileBase64, setFileBase64] = useState("")
+    function downloadBase64File(base64Data, filename) {
+        const [metadata, data] = base64Data.split(';base64,');
+        console.log(base64Data)
+        const mimeType = metadata.split(':')[1];
+        const byteString = atob(data);
 
+        const byteNumbers = new Array(byteString.length);
+        for (let i = 0; i < byteString.length; i++) {
+            byteNumbers[i] = byteString.charCodeAt(i);
+        }
+
+        const byteArray = new Uint8Array(byteNumbers);
+        const fileBlob = new Blob([byteArray], { type: mimeType });
+
+        const blobUrl = URL.createObjectURL(fileBlob);
+   
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = filename;
+        link.style.display = 'none';
+
+        document.body.appendChild(link);
+        link.click();
+
+        URL.revokeObjectURL(blobUrl);
+        document.body.removeChild(link);
+    }
     const { openFilePicker, filesContent, loading } = useFilePicker({
         multiple: false,
         onFilesSuccessfullySelected: ({ plainFiles, filesContent }) => {
-          
-            const newm = roomInfos.messages
-            const date = new Date()
-            newm.push({
-                type: "img",
-                isSent: true,
-                imgContent: URL.createObjectURL(plainFiles[0]),
-                date: date.getHours() + ":" + date.getMinutes()
-            })
+            
+            const reader = new FileReader();
+            reader.onload = () => {
+                console.log(reader.result)
+                  
+                const newm = roomInfos.messages
+                const date = new Date()
+                if(plainFiles[0].type.startsWith('image/')){
+                    newm.push({
+                        type: "img",
+                        isSent: true,
+                        imgContent: URL.createObjectURL(plainFiles[0]),
+                        date: date.getHours() + ":" + date.getMinutes()
+                    })
+                    roomInfos.peers.forEach(p => {
+                        p.peer.send(JSON.stringify({
+                            type: "img",
+                            pdp: settings.profilePicture,
+                            userName: settings.userName,
+                            imgSrc: reader.result,
+                            fType: plainFiles[0].type,
+                            fileName: plainFiles[0].name
+                        }))
+                    });
+                
+                }else{
+                    newm.push({
+                        type: "file",
+                        isSent: true,
+                        src: reader.result,
+                        date: date.getHours() + ":" + date.getMinutes(),
+                        fileName: plainFiles[0].name,
+                        fileSize: "10KB"
+                    })
+                    roomInfos.peers.forEach(p => {
+                        p.peer.send(JSON.stringify({
+                            type: "file",
+                            pdp: settings.profilePicture,
+                            userName: settings.userName,
+                            src: reader.result,
+                            fType: plainFiles[0].type,
+                            fileName: plainFiles[0].name,
+                            fileSize: "10KB"
+                        }))
+                    });
+                }
+
+            
+        
+                setRoomInfos(roomInfos => ({
+                    ...roomInfos,
+                    messages: newm
+                }));
+               
+         
+                
+            };
+            reader.readAsDataURL(plainFiles[0]);
+            
+            // const newm = roomInfos.messages
+            // const date = new Date()
+            // newm.push({
+            //     type: "img",
+            //     isSent: true,
+            //     imgContent: URL.createObjectURL(plainFiles[0]),
+            //     date: date.getHours() + ":" + date.getMinutes()
+            // })
           
     
-            setRoomInfos(roomInfos => ({
-                ...roomInfos,
-                messages: newm
-            }));
+            // setRoomInfos(roomInfos => ({
+            //     ...roomInfos,
+            //     messages: newm
+            // }));
+            // getBase64(plainFiles[0]) 
+            // .then(res => {
+               
+                
+            // }) 
+            // const reader = new FileReader();
+            // reader.onload = function(event) {
+            //   const fileData = event.target.result;
+            //   let uint8Array = new Uint8Array(fileData);
+            //   let jsonString = new TextDecoder('utf-8').decode(uint8Array);
+          
+            //   roomInfos.peers.forEach(p => {
+            //     p.peer.send(JSON.stringify({
+            //         type: "img",
+            //         pdp: settings.profilePicture,
+            //         userName: settings.userName,
+            //         imgSrc: jsonString,
+            //         fType: plainFiles[0].type,
+            //         fileName: plainFiles[0].name
+            //     }))
+            // });
+            // };
+            // reader.readAsArrayBuffer(plainFiles[0]);
+
+
+            // roomInfos.peers.forEach(p => {
+            //     p.peer.send(JSON.stringify({
+            //         type: "img",
+            //         pdp: settings.profilePicture,
+            //         userName: settings.userName,
+            //         imgSrc: res
+            //     }))
+            // });
+          
+        
            
           }
     });
@@ -45,9 +166,18 @@ export default function ChatSection({roomInfos,setRoomInfos, settings}) {
             //     date: "23:52 PM"
                 
             // }
+          
             roomInfos.peers.forEach(p => {
-                p.peer.send(settings.profilePicture+"::/::"+settings.userName+"::/::"+text)
+                p.peer.send(JSON.stringify({
+                    type: "msg",
+                    pdp: settings.profilePicture,
+                    userName: settings.userName,
+                    message: text
+                }))
             });
+            // roomInfos.peers.forEach(p => {
+            //     p.peer.send(settings.profilePicture+"::/::"+settings.userName+"::/::"+text)
+            // });
 
             const newm = roomInfos.messages
             const date = new Date()
@@ -92,9 +222,10 @@ export default function ChatSection({roomInfos,setRoomInfos, settings}) {
 
             </div>
          
-            <div class="mx-9 flex flex-col  ">
+            <div class="mx-9 flex flex-col my-4 ">
                 {roomInfos.messages.map((message, index)=>{
                     if(message.type == "msg"){
+                       
                         if (message.isSent) {
                             return(
                                 <div class="send-container w-fit self-end my-2" key={index}>
@@ -113,11 +244,12 @@ export default function ChatSection({roomInfos,setRoomInfos, settings}) {
                                 </div>
                             )
                         }
-                    }else if(message.type = "img"){
+                    }else if(message.type == "img"){
+                       
                         if (message.isSent){
                             return(
                                 <div class="self-end mt-2" key={index}>
-                                    <img src={message.imgContent} alt="" class="max-w-[300px] max-h-[300px] rounded-lg shadow-lg"/>
+                                    <img src={message.imgContent} alt="" class="max-w-[400px] max-h-[400px] rounded-lg shadow-lg"/>
                                     
                                     <p class="text-gray-500 text-xs text-right">{message.date}</p>
                                       
@@ -125,16 +257,61 @@ export default function ChatSection({roomInfos,setRoomInfos, settings}) {
                             )
                         }else{
                             return(
-                                <div class="flex" key={index}>
-                                    <img src={message.imgContent} alt="" class="max-w-20 rounded-lg shadow-2xl"/>
-                                    <p class="text-gray-500 text-xs text-right">{message.date}</p>
+                                <div class="rec-container flex gap-3 my-3" key={index}>
+                                    <img src={message.pdp} alt="" class="w-12 h-12 rounded-full shadow-lg"/>
+                                    <div>
+                                        <p class="text-gray-500 text-sm text-left">{message.name} • {message.date}</p>
+                                        <img src={message.imgContent} alt="" class="max-w-[400px] max-h-[400px] rounded-lg shadow-lg"/>
+                                    
+                                    </div>
                                 </div>
+                                // <div class="flex flex-col w-fit" key={index}>
+                                   
+                                //     <p class="text-gray-500 text-xs text-right">{message.date}</p>
+                                // </div>
+                            )
+                        }
+                    }else if(message.type == "file"){
+                     
+                        if (message.isSent){
+                            return(
+                                <div class="self-end mt-2" key={index}>
+                                    <div className="dark:bg-[#2d3647] rounded-lg w-30 flex items-center p-2 gap-3">
+                                        <FontAwesomeIcon icon={faFile} size="2xl" className="text-[#1786d8]  " />                                          
+                                        <div className="dark:bg-[#2d3647] rounded-lg w-30">
+                                            <p class="text-gray-300 text-sm text-left">{message.fileName} • {message.fileSize}</p>
+                                        </div>
+                                        <FontAwesomeIcon icon={faDownload} size="lg" className="text-[#1786d8] p-2 rounded-lg border-gray-700 border-[1px] cursor-pointer dark:bg-[#262d3a]" onClick={() => downloadBase64File(message.src, message.fileName)}/>     
+                                    </div>
+                                    <p class="text-gray-500 text-xs text-right">{message.date}</p>      
+                                </div>
+                            )
+                        }else{
+                            return(
+                                <div class="rec-container flex gap-3 my-3" key={index}>
+                                    <img src={message.pdp} alt="" class="w-12 h-12 rounded-full shadow-lg"/>
+                                    <div>
+                                        <p class="text-gray-500 text-sm text-left">{message.name} • {message.date}</p>
+                                        <div className="dark:bg-[#2d3647] rounded-lg w-30 flex items-center p-2 gap-3">
+                                            <FontAwesomeIcon icon={faFile} size="2xl" className="text-[#1786d8]  " />                                          
+                                            <div className="dark:bg-[#2d3647] rounded-lg w-30">
+                                                <p class="text-gray-300 text-sm text-left">{message.fileName} • {message.fileSize}</p>
+                                            </div>
+                                            <FontAwesomeIcon icon={faDownload} size="lg" className="text-[#1786d8] p-2 rounded-lg border-gray-700 border-[1px] cursor-pointer dark:bg-[#262d3a]" onClick={() => downloadBase64File(message.src, message.fileName)}/>     
+                                        </div>
+                                    </div>
+                                </div>
+                                // <div class="flex flex-col w-fit" key={index}>
+                                   
+                                //     <p class="text-gray-500 text-xs text-right">{message.date}</p>
+                                // </div>
                             )
                         }
                     }
 
                 
                 })}
+       
             </div>
          
             <div class="absolute bottom-0 left-0 h-28 w-full  dark:border-[#3f465a] border-[#d8dae0] border-t-[1px] flex items-center justify-between p-10">

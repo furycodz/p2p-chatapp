@@ -30,7 +30,7 @@ export default function ChatSection({language, settings, setSettings}) {
         <FontAwesomeIcon icon={faGear} size="lg" className="text-gray-800 cursor-pointer dark:text-gray-200" onClick={() => setIsOpen(true)}/>
         <Modal className="" isOpen={isOpen} onRequestClose={() => setIsOpen(false)} style={customStyles}> 
         <div className="rounded-3xl flex flex-col gap-y-4">
-            <h2 className="font-bold w-full border-b-[1px] border-gray-400 mb-4 py-2 text-lg ">Settings</h2>
+            <h2 className="font-bold w-full border-b-[1px] border-gray-400 mb-4 py-2 text-lg ">{language.settings_name}</h2>
             <div class="flex justify-between items-center gap-7">
                 <div class="flex gap-5 items-center">
                     <FontAwesomeIcon icon={faPlus} size="xl" className="text-[#1786d8]  p-3 bg-gray-100 rounded-lg " />

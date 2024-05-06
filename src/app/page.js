@@ -98,12 +98,14 @@ export default function Home() {
 
   const language = {
     fr: {
-        search_text:"Créer ou rejoindre un groupe"
+        search_text:"Créer ou rejoindre un groupe",
+        settings_name: "Parametres"
     },
     en: {
-        search_text:"Create or Join Room"
+        search_text:"Create or Join Room",
+        settings_name: "Settings"
     }
-}
+  }
   return (
     <main className="flex h-screen">
      

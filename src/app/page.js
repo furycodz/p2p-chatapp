@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import Peer from "simple-peer";
 import { generateUsername } from "unique-username-generator";
+import {generateKeyPair} from "../services/encryption"
 
 export default function Home() {
 
@@ -18,7 +19,9 @@ export default function Home() {
     notifications: true,
     userName: "",
     profilePicture: "/user.jpg",
-
+    leftSectionStatus: false,
+    publicKey: '',
+    privateKey: 'ezf'
   })
 
   const [roomInfos, setRoomInfos] = useState({
@@ -28,56 +31,22 @@ export default function Home() {
     peers: []
   })
 
-//   const [messages,setMessages] = useState([
-//     {
-//         isSent: true,
-//         message: "Test 1",
-//         date: "23:52 PM"
-//     },
-//     {
-//         isSent: false,
-//         message: "Test 1",
-//         date: "23:52 PM",
-//         pdp: "/a.jpg",
-//         name: "Mohammed"
-//     },
-//     {
-//         isSent: true,
-//         message: "Test 1",
-//         date: "23:52 PM"
-//     },
-//     {
-//         isSent: true,
-//         message: "Test 1",
-//         date: "23:52 PM"
-//     },
-// ])
-//   const [peers, setPeers] = useState([
 
-//   ])
-  // {
-  //   id: "",
-  //   profile_picture: "/a.jpg",
-  //   name: "Mohammed"
-  // },
-  // {
-  //   id: "",
-  //   profile_picture: "/b.jpg",
-  //   name: "Badr"
-  // }
-
-  useEffect(() => {
+  useEffect(async () => {
     if (typeof window !== 'undefined') {
       const sett = JSON.parse(localStorage.getItem('settings'));
       if (sett) {
-        setSettings(sett);
-     
+        const key = await generateKeyPair()
+        console.log("Public Key:"+key[0])
+        console.log("Private Key:"+key[1])
+        // setSettings(sett);
+
+       
       }
       socketRef.current = io.connect("http://localhost:8000");
-     
-     
-      
     }
+    
+    
   }, []);
 
   useEffect(() => {
@@ -111,7 +80,7 @@ export default function Home() {
      
          <LeftSection language={language[settings.lang]} settings={settings} setSettings={setSettings} socketRef={socketRef} roomInfos={roomInfos} setRoomInfos={setRoomInfos} />
       
-        <ChatSection language={language[settings.lang]} roomInfos={roomInfos} setRoomInfos={setRoomInfos} settings={settings}/> 
+        <ChatSection language={language[settings.lang]} roomInfos={roomInfos} setRoomInfos={setRoomInfos} settings={settings} setSettings={setSettings}/> 
     </main>
   );
 }

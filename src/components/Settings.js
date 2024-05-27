@@ -133,7 +133,12 @@ export default function ChatSection({language, settings, setSettings}) {
            
               
             </div>
-
+            <div class="flex gap-5 items-center">
+              
+                    <h2 className="font-bold text-[#1d425d]" >ihoj</h2>
+                    <h2 className="font-bold text-[#1d425d]" >Private Key: {settings.privateKey}</h2>
+                    
+                </div>
         </div> 
     </Modal>
     </div>

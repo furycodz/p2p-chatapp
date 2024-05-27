@@ -7,6 +7,9 @@ import Peer from "simple-peer";
 import useSound from 'use-sound'
 // import mySound from '../../public/notif_sound.mp3'
 import { v1 as uuid } from 'uuid';
+import {encryptMessage, decryptMessage} from '../services/encryption'
+import { AES, enc } from 'crypto-js';
+//qeG8xsaSCCMOyoP8nH57p9TgCCmeu86LC1i+1PafkFlOAzzI4oJIIjgO2dYoocnI
 
 export default function Home({language, settings,setSettings, socketRef, roomInfos, setRoomInfos}) {
 
@@ -104,8 +107,8 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
             socketRef.current.emit("sending signal", { userToSignal, callerID, signal })
         })
         peer.on('data', data => {
-            console.log(JSON.parse(data.toString()))
-            console.log(roomInfos)
+            // console.log(JSON.parse(data.toString()))
+            // console.log(roomInfos)
 
             
             // const blob = new Blob([jsondata.imgSrc]);
@@ -118,7 +121,7 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
 
             // const jsondata = JSON.parse(data.toString())
             // const newm = roomInfos.messages
-            const jsondata = JSON.parse(data.toString())
+            const jsondata = JSON.parse(AES.decrypt(data.toString(), "secret").toString(enc.Utf8))
             const newm = roomInfos.messages
             const date = new Date()
             if(jsondata.type == "img"){
@@ -138,6 +141,7 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
                     name: jsondata.userName,
                     isSent: false,
                     message: jsondata.message,
+                    // message: AES.decrypt(jsondata.message, "secret").toString(enc.Utf8),
                     date: date.getHours() + ":" + date.getMinutes()
                 })
             }else if(jsondata.type == "file"){
@@ -216,7 +220,7 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
             //     messages: newm
             // }));
             // playNotificationSound()
-            const jsondata = JSON.parse(data.toString())
+            const jsondata = JSON.parse(AES.decrypt(data.toString(), "secret").toString(enc.Utf8))
             const newm = roomInfos.messages
             const date = new Date()
             if(jsondata.type == "img"){
@@ -235,7 +239,8 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
                     name: jsondata.userName,
                     isSent: false,
                     message: jsondata.message,
-                    date: date.getHours() + ":" + date.getMinutes()
+                    // message: jsondata.message,
+                    // date: date.getHours() + ":" + date.getMinutes()
                 })
             }else if(jsondata.type == "file"){
                 newm.push({
@@ -265,7 +270,7 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
  
    
     return (
-        <div class="w-1/4 bg-[#fdfdfd] border-[#d8dae0] dark:border-[#3f465a] border-r-[1px] dark:bg-[#1a202c]">
+        <div class={"hidden md:w-1/3 lg:w-1/4 bg-[#fdfdfd] border-[#d8dae0] dark:border-[#3f465a] border-r-[1px] dark:bg-[#1a202c]  md:block"}>
     
         <div class="h-24 bg-[#fdfdfd] border-[#d8dae0] border-b-[1px] flex items-center justify-between px-4 dark:bg-[#1a202c] dark:border-[#3f465a]">
             <div class="flex items-center gap-5">
@@ -295,7 +300,7 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
                     <div class="bg-[#e6f2fa] dark:hover:bg-[#272b3a] dark:bg-[#313648] border-[#d8dae0] dark:border-[#3f465a] border-b-[1px] h-24 flex items-center justify-between">
                         <div class="flex items-center">
                             <div class="mx-4">
-                                <img src={peer.profile_picture} alt="" class="w-16 rounded-2xl"/>
+                                {/* <img src={peer.profile_picture} alt="" class="w-16 rounded-2xl"/> */}
         
                             </div>
                             <div>

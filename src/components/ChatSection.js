@@ -1,13 +1,14 @@
 "use client";
-import { faCamera,faClipboard,faDownload,faFile,faMicrophone,faPaste,faPhone,faPlus, faVideo } from '@fortawesome/free-solid-svg-icons'
+import { faCamera,faChevronRight,faClipboard,faDownload,faFile,faMicrophone,faPaste,faPhone,faPlus, faVideo } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Romanesco } from 'next/font/google';
 import { useState,useEffect } from 'react';
 import { useFilePicker, FileAmountLimitValidator } from 'use-file-picker';
 import Image from './messages/Image';
+import {encryptMessage, decryptMessage} from '../services/encryption'
+import { AES, enc } from 'crypto-js';
 
-
-export default function ChatSection({roomInfos,setRoomInfos, settings}) {
+export default function ChatSection({roomInfos,setRoomInfos, settings, setSettings}) {
     const [text,setText] = useState("")
     const [fileBase64, setFileBase64] = useState("")
     function downloadBase64File(base64Data, filename) {
@@ -55,14 +56,14 @@ export default function ChatSection({roomInfos,setRoomInfos, settings}) {
                         date: date.getHours() + ":" + date.getMinutes()
                     })
                     roomInfos.peers.forEach(p => {
-                        p.peer.send(JSON.stringify({
+                        p.peer.send(AES.encrypt(JSON.stringify({
                             type: "img",
                             pdp: settings.profilePicture,
                             userName: settings.userName,
                             imgSrc: reader.result,
                             fType: plainFiles[0].type,
                             fileName: plainFiles[0].name
-                        }))
+                        }), "secret").toString())
                     });
                 
                 }else{
@@ -75,7 +76,7 @@ export default function ChatSection({roomInfos,setRoomInfos, settings}) {
                         fileSize: "10KB"
                     })
                     roomInfos.peers.forEach(p => {
-                        p.peer.send(JSON.stringify({
+                        p.peer.send(AES.encrypt(JSON.stringify({
                             type: "file",
                             pdp: settings.profilePicture,
                             userName: settings.userName,
@@ -83,7 +84,7 @@ export default function ChatSection({roomInfos,setRoomInfos, settings}) {
                             fType: plainFiles[0].type,
                             fileName: plainFiles[0].name,
                             fileSize: "10KB"
-                        }))
+                        }), "secret").toString())
                     });
                 }
 
@@ -152,8 +153,8 @@ export default function ChatSection({roomInfos,setRoomInfos, settings}) {
           }
     });
 
-    const handleFileSubmit = () => {
-        openFilePicker()
+    const toggleSideBar = () => {
+        console.log("hhiio")
     
     }
 
@@ -165,16 +166,31 @@ export default function ChatSection({roomInfos,setRoomInfos, settings}) {
             //     message: text,
             //     date: "23:52 PM"
                 
+            
             // }
-          
+        //   console.log(AES.decrypt(JSON.stringify({
+        //     type: "msg",
+        //     pdp: settings.profilePicture,
+        //     userName: settings.userName,
+        //     message: text
+        // }), "secret").toString(enc.Utf8))
+     
             roomInfos.peers.forEach(p => {
-                p.peer.send(JSON.stringify({
+                // p.peer.send(JSON.stringify({
+                //     type: "msg",
+                //     pdp: settings.profilePicture,
+                //     userName: settings.userName,
+                //     message: text
+                // }))
+                p.peer.send(AES.encrypt(JSON.stringify({
                     type: "msg",
                     pdp: settings.profilePicture,
                     userName: settings.userName,
                     message: text
-                }))
+                }), "secret").toString())
             });
+            // console.log(AES.encrypt(text, "secret").toString())
+          
             // roomInfos.peers.forEach(p => {
             //     p.peer.send(settings.profilePicture+"::/::"+settings.userName+"::/::"+text)
             // });
@@ -203,10 +219,13 @@ export default function ChatSection({roomInfos,setRoomInfos, settings}) {
 
 
     return (
-      <div class="w-3/4 relative dark:bg-[#1a202c]  h-screen">
+      <div class={" z-0 md:w-2/3 lg:w-3/4 relative dark:bg-[#1a202c] w-full  h-screen"}>
 
-            <div class="h-24 bg-[#fdfdfd] border-[#d8dae0] dark:border-[#3f465a] border-b-[1px] p-10 flex items-center dark:bg-[#1a202c] justify-between">
-                <div class="flex items-center gap-4 ">
+            <div class={"h-24 bg-[#fdfdfd] border-[#d8dae0] dark:border-[#3f465a] border-b-[1px] p-10 flex items-center dark:bg-[#1a202c] justify-between"}>
+                <div className="block md:hidden">
+                    <FontAwesomeIcon icon={faChevronRight} size="lg" className="text-[#1786d8]  cursor-pointer" onClick={() => setSettings({...settings, leftSectionStatus: !settings.leftSectionStatus})}/> 
+                </div>
+                <div class="flex items-center gap-4  " >
                     
                     <div>
                         {/* <p class="font-bold dark:text-gray-200">{roomInfos.roomName}</p> */}
@@ -215,10 +234,10 @@ export default function ChatSection({roomInfos,setRoomInfos, settings}) {
                     
                     
                 </div>
-                <div className='flex gap-4'>
+                {/* <div className='flex gap-4'>
                 <FontAwesomeIcon size="lg" icon={faPhone} className="dark:text-gray-200 cursor-pointer"/>
                 <FontAwesomeIcon size="lg" icon={faVideo} className="dark:text-gray-200 cursor-pointer"/>
-                </div>
+                </div> */}
 
             </div>
          
@@ -319,7 +338,7 @@ export default function ChatSection({roomInfos,setRoomInfos, settings}) {
                 <FontAwesomeIcon icon={faPlus} size="lg" className="text-[#1786d8] bg-[#f1f2f4] p-4 rounded-3xl dark:bg-[#262d3b] cursor-pointer" onClick={() => openFilePicker()}/>
 
                 {/* <i class="fa-solid fa-plus text-[#1786d8] bg-[#f1f2f4] p-4 rounded-3xl" ></i> */}
-                <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => {handleSubmit(e)}} type="text" class="w-[88%] h-12 rounded-3xl bg-[#f1f2f4] text-gray-700 outline-none px-6 dark:bg-[#262d3b] dark:text-white" placeholder="Type a message ...."/>
+                <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => {handleSubmit(e)}} type="text" class="w-[75%] lg:w-[88%] h-12 rounded-3xl bg-[#f1f2f4] text-gray-700 outline-none px-6 dark:bg-[#262d3b] dark:text-white" placeholder="Type a message ...."/>
                 {/* <i class="fa-solid fa-microphone text-[24px]"></i>
                 <i class="fa-solid fa-camera text-[24px]"></i> */}
                 <FontAwesomeIcon size="lg" icon={faMicrophone} className="dark:text-gray-200"/>

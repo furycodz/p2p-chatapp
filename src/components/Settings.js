@@ -35,7 +35,7 @@ export default function ChatSection({language, settings, setSettings}) {
                 <div class="flex gap-5 items-center">
                     <FontAwesomeIcon icon={faPlus} size="xl" className="text-[#1786d8]  p-3 bg-gray-100 rounded-lg " />
                    
-                        <h2 className="font-bold text-[#1d425d]" >Username</h2>
+                        <h2 className="font-bold text-[#1d425d]" >{language.settings_username}</h2>
                        
                   
                 </div>
@@ -49,7 +49,7 @@ export default function ChatSection({language, settings, setSettings}) {
                 <div class="flex gap-5 items-center">
                     <FontAwesomeIcon icon={faPlus} size="xl" className="text-[#1786d8]  p-3 bg-gray-100 rounded-lg " />
                    
-                        <h2 className="font-bold text-[#1d425d] w-fit whitespace-nowrap" >Profile Picture</h2>
+                        <h2 className="font-bold text-[#1d425d] w-fit whitespace-nowrap" >{language.settings_profile_picture}</h2>
                        
                   
                 </div>
@@ -64,7 +64,7 @@ export default function ChatSection({language, settings, setSettings}) {
                 <div class="flex gap-5 items-center">
                     <FontAwesomeIcon icon={faPlus} size="xl" className="text-[#1786d8]  p-3 bg-gray-100 rounded-lg " />
                     
-                        <h2 className="font-bold text-[#1d425d]" >Dark mode</h2>
+                        <h2 className="font-bold text-[#1d425d]" >{language.settings_darkmode}</h2>
                       
                         
                     
@@ -81,7 +81,7 @@ export default function ChatSection({language, settings, setSettings}) {
                 <div class="flex gap-5 items-center">
                     <FontAwesomeIcon icon={faPlus} size="xl" className="text-[#1786d8]  p-3 bg-gray-100 rounded-lg " />
                  
-                        <h2 className="font-bold text-[#1d425d]" >Notifications</h2>
+                        <h2 className="font-bold text-[#1d425d]" >{language.settings_notifications}</h2>
                         
                         
                     
@@ -97,7 +97,7 @@ export default function ChatSection({language, settings, setSettings}) {
             <div class="flex justify-between items-center gap-7">
                 <div class="flex gap-5 items-center">
                     <FontAwesomeIcon icon={faPlus} size="xl" className="text-[#1786d8]  p-3 bg-gray-100 rounded-lg " />
-                        <h2 className="font-bold text-[#1d425d]" >Message Sound</h2>
+                        <h2 className="font-bold text-[#1d425d]" >{language.settings_message_sound}</h2>
                         
                 </div>
                
@@ -112,7 +112,7 @@ export default function ChatSection({language, settings, setSettings}) {
             <div class="flex justify-between items-center gap-7">
                 <div class="flex gap-5 items-center">
                 <FontAwesomeIcon icon={faPlus} size="xl" className="text-[#1786d8]  p-3 bg-gray-100 rounded-lg " />
-                    <h2 className="font-bold text-[#1d425d]" >Language</h2>
+                    <h2 className="font-bold text-[#1d425d]" >{language.settings_language}</h2>
                     
                 </div>
                 
@@ -122,10 +122,12 @@ export default function ChatSection({language, settings, setSettings}) {
                 
                     <option value="en">English</option>
                     <option value="fr">Francais</option>
+                    <option value="tf">ⵜⴰⵎⴰⵣⵉⵖⵜ</option>
+                    <option value="ar">العربية</option>
                 </select>
                 <label
                     class="before:content[' '] after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none text-[11px] font-normal leading-tight text-blue-gray-400 transition-all before:pointer-events-none before:mt-[6.5px] before:mr-1 before:box-border before:block before:h-1.5 before:w-2.5 before:rounded-tl-md before:border-t before:border-l before:border-blue-gray-200 before:transition-all after:pointer-events-none after:mt-[6.5px] after:ml-1 after:box-border after:block after:h-1.5 after:w-2.5 after:flex-grow after:rounded-tr-md after:border-t after:border-r after:border-blue-gray-200 after:transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[3.75] peer-placeholder-shown:text-blue-gray-500 peer-placeholder-shown:before:border-transparent peer-placeholder-shown:after:border-transparent peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-gray-900 peer-focus:before:border-t-2 peer-focus:before:border-l-2 peer-focus:before:border-gray-900 peer-focus:after:border-t-2 peer-focus:after:border-r-2 peer-focus:after:border-gray-900 peer-disabled:text-transparent peer-disabled:before:border-transparent peer-disabled:after:border-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">
-                    Select Language
+                    {language.settings_select_language}
                 </label>
                 </div>
 
@@ -133,12 +135,12 @@ export default function ChatSection({language, settings, setSettings}) {
            
               
             </div>
-            <div class="flex gap-5 items-center">
+            {/* <div class="flex gap-5 items-center">
               
                     <h2 className="font-bold text-[#1d425d]" >ihoj</h2>
                     <h2 className="font-bold text-[#1d425d]" >Private Key: {settings.publicKey}</h2>
                     
-                </div>
+                </div> */}
         </div> 
     </Modal>
     </div>

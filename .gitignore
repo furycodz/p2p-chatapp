@@ -10,7 +10,7 @@
 /coverage
 /radata
 /src/components/EmptySection.js
-
+radata*
 # next.js
 /.next/
 /out/

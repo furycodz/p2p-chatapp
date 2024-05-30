@@ -9,7 +9,7 @@ import {encryptMessage, decryptMessage} from '../services/encryption'
 import { AES, enc } from 'crypto-js';
 import { storeMessage, getMessages } from '../services/storage'
 
-export default function ChatSection({socketRef,roomInfos,setRoomInfos, settings, setSettings}) {
+export default function ChatSection({socketRef,roomInfos,setRoomInfos, settings, setSettings, language}) {
     const [text,setText] = useState("")
     const [fileBase64, setFileBase64] = useState("")
     function downloadBase64File(base64Data, filename) {
@@ -54,7 +54,7 @@ export default function ChatSection({socketRef,roomInfos,setRoomInfos, settings,
                         type: "img",
                         isSent: true,
                         imgContent: URL.createObjectURL(plainFiles[0]),
-                        date: date.getHours() + ":" + date.getMinutes()
+                        date: date.getHours() + ":"+ (date.getMinutes() < 10 ? "0": "") + date.getMinutes()
                     })
                     roomInfos.peers.forEach(p => {
                         p.peer.send(JSON.stringify({
@@ -80,7 +80,7 @@ export default function ChatSection({socketRef,roomInfos,setRoomInfos, settings,
                         type: "file",
                         isSent: true,
                         src: reader.result,
-                        date: date.getHours() + ":" + date.getMinutes(),
+                        date: date.getHours() + ":"+ (date.getMinutes() < 10 ? "0": "") + date.getMinutes(),
                         fileName: plainFiles[0].name,
                         fileSize: "10KB"
                     })
@@ -136,7 +136,7 @@ export default function ChatSection({socketRef,roomInfos,setRoomInfos, settings,
         socketRef.current.emit('get messages', roomInfos.roomID, (messages) => {
             console.log(messages)
             if(messages){
-                const newm = []
+                const newm = roomInfos.messages
                 messages.forEach(mess => {
                     if(mess){
                         if(mess.userName == settings.userName){
@@ -216,14 +216,14 @@ export default function ChatSection({socketRef,roomInfos,setRoomInfos, settings,
                 type: "msg",
                 isSent: true,
                 message: text,
-                date: date.getHours() + ":" + date.getMinutes()
+                date: date.getHours() + ":" + (date.getMinutes() < 10 ? "0": "") +date.getMinutes()
             }
             const messtoStore = {
                 type: "msg",
                 pdp: settings.profilePicture,
                 userName: settings.userName,
                 message: text,
-                date: date.getHours() + ":" + date.getMinutes()
+                date: date.getHours() + ":" +(date.getMinutes() < 10 ? "0": "") + date.getMinutes()
             }
             newm.push(mess)
             storeMessage(socketRef, roomInfos.roomID, messtoStore)
@@ -242,29 +242,30 @@ export default function ChatSection({socketRef,roomInfos,setRoomInfos, settings,
 
 
     return (
-      <div class={" z-0 md:w-2/3 lg:w-3/4 relative dark:bg-[#1a202c] w-full  h-screen"}>
+      <div class={"md:w-2/3 lg:w-3/4 relative dark:bg-[#1a202c]  h-screen overflow-hidden"}>
 
+            {/* {settings.leftSectionStatus &&  */}
             <div class={"h-24 bg-[#fdfdfd] border-[#d8dae0] dark:border-[#3f465a] border-b-[1px] p-10 flex items-center dark:bg-[#1a202c] justify-between"}>
-                <div className="block md:hidden">
-                    <FontAwesomeIcon icon={faChevronRight} size="lg" className="text-[#1786d8]  cursor-pointer" onClick={() => setSettings({...settings, leftSectionStatus: !settings.leftSectionStatus})}/> 
-                </div>
-                <div class="flex items-center gap-4  " >
-                    
-                    <div>
-                        {/* <p class="font-bold dark:text-gray-200">{roomInfos.roomName}</p> */}
-                        <p class="font-bold dark:text-gray-200" >Room: {roomInfos.roomID.length == 0 ? <span className=' dark:text-gray-400 text-sm'>Not connected</span>: <span className=' dark:text-gray-400 text-sm'>{roomInfos.roomID} <FontAwesomeIcon size="lg" icon={faPaste} className="dark:text-gray-500 cursor-pointer ml-2 hover:text-black" onClick={() => {navigator.clipboard.writeText(roomInfos.roomID)}}/></span>}</p>
-                    </div>
-                    
-                    
-                </div>
-                <div className='flex gap-4'>
-                    <FontAwesomeIcon size="lg" icon={faRotate} className="dark:text-gray-200 cursor-pointer" onClick={() => getMessagee()}/>
                 
+            <div class="flex items-center gap-4  " >
+                
+                <div>
+                    {/* <p class="font-bold dark:text-gray-200">{roomInfos.roomName}</p> */}
+                    <p class="font-bold dark:text-gray-200" >{language.room} {roomInfos.roomID.length == 0 ? <span className=' dark:text-gray-400 text-sm'>{language.not_connected}</span>: <span className=' dark:text-gray-400 text-sm'>{roomInfos.roomID} <FontAwesomeIcon size="lg" icon={faPaste} className="dark:text-gray-500 cursor-pointer ml-2 hover:text-black" onClick={() => {navigator.clipboard.writeText(roomInfos.roomID)}}/></span>}</p>
                 </div>
-
+                
+                
             </div>
+            <div className='flex gap-4'>
+                <FontAwesomeIcon size="lg" icon={faRotate} className="dark:text-gray-200 cursor-pointer" onClick={() => getMessagee()}/>
+            
+            </div>
+
+        </div>
+            {/* } */}
+            
          
-            <div class="mx-9 flex flex-col my-4 ">
+            <div class="px-9 flex flex-col py-3 overflow-y-scroll h-[calc(100vh-16.5rem)]">
                 {roomInfos.messages.map((message, index)=>{
                     if(message.type == "msg"){
                        
@@ -321,7 +322,7 @@ export default function ChatSection({socketRef,roomInfos,setRoomInfos, settings,
                                     <div className="dark:bg-[#2d3647] rounded-lg w-30 flex items-center p-2 gap-3">
                                         <FontAwesomeIcon icon={faFile} size="2xl" className="text-[#1786d8]  " />                                          
                                         <div className="dark:bg-[#2d3647] rounded-lg w-30">
-                                            <p class="text-gray-300 text-sm text-left">{message.fileName} • {message.fileSize}</p>
+                                            <p class="text-gray-300 text-sm text-left">{message.fileName} </p>
                                         </div>
                                         <FontAwesomeIcon icon={faDownload} size="lg" className="text-[#1786d8] p-2 rounded-lg border-gray-700 border-[1px] cursor-pointer dark:bg-[#262d3a]" onClick={() => downloadBase64File(message.src, message.fileName)}/>     
                                     </div>
@@ -337,7 +338,7 @@ export default function ChatSection({socketRef,roomInfos,setRoomInfos, settings,
                                         <div className="dark:bg-[#2d3647] rounded-lg w-30 flex items-center p-2 gap-3">
                                             <FontAwesomeIcon icon={faFile} size="2xl" className="text-[#1786d8]  " />                                          
                                             <div className="dark:bg-[#2d3647] rounded-lg w-30">
-                                                <p class="text-gray-300 text-sm text-left">{message.fileName} • {message.fileSize}</p>
+                                                <p class="text-gray-300 text-sm text-left">{message.fileName} </p>
                                             </div>
                                             <FontAwesomeIcon icon={faDownload} size="lg" className="text-[#1786d8] p-2 rounded-lg border-gray-700 border-[1px] cursor-pointer dark:bg-[#262d3a]" onClick={() => downloadBase64File(message.src, message.fileName)}/>     
                                         </div>
@@ -356,12 +357,12 @@ export default function ChatSection({socketRef,roomInfos,setRoomInfos, settings,
        
             </div>
          
-            <div class="absolute bottom-0 left-0 h-28 w-full  dark:border-[#3f465a] border-[#d8dae0] border-t-[1px] flex items-center justify-between p-10">
+            <div class="z-10 absolute bottom-0 left-0 h-28 w-full  dark:border-[#3f465a] border-[#d8dae0] border-t-[1px] flex items-center justify-between p-10">
               
                 <FontAwesomeIcon icon={faPlus} size="lg" className="text-[#1786d8] bg-[#f1f2f4] p-4 rounded-3xl dark:bg-[#262d3b] cursor-pointer" onClick={() => openFilePicker()}/>
 
                 {/* <i class="fa-solid fa-plus text-[#1786d8] bg-[#f1f2f4] p-4 rounded-3xl" ></i> */}
-                <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => {handleSubmit(e)}} type="text" class="w-[75%] lg:w-[88%] h-12 rounded-3xl bg-[#f1f2f4] text-gray-700 outline-none px-6 dark:bg-[#262d3b] dark:text-white" placeholder="Type a message ...."/>
+                <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => {handleSubmit(e)}} type="text" class=" cursor-not-allowedw-[75%] lg:w-[88%] h-12 rounded-3xl bg-[#f1f2f4] text-gray-700 outline-none px-6 dark:bg-[#262d3b] dark:text-white" placeholder={language.input_text}/>
                 {/* <i class="fa-solid fa-microphone text-[24px]"></i>
                 <i class="fa-solid fa-camera text-[24px]"></i> */}
                 <FontAwesomeIcon size="lg" icon={faMicrophone} className="dark:text-gray-200" onClick={() => getMessag()}/>

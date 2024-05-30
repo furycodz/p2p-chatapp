@@ -1,6 +1,6 @@
 "use client";
 import Gun from 'gun';
-import { faCamera,faCircle,faEllipsis,faPlus, faRotate } from '@fortawesome/free-solid-svg-icons'
+import { faCamera,faChevronDown,faChevronUp,faCircle,faEllipsis,faPlus, faRotate } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Settings from './Settings'
 import { useState,useEffect,useRef } from 'react';
@@ -29,74 +29,10 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
         }
     }
 
-    const getMessag = () => {
-        console.log("aaaa")
-        socketRef.current.emit('get messages', roomID, (messages) => {
-            console.log(messages)
-            if(messages){
-                const newm = []
-                messages.forEach(mess => {
-                    if(mess){
-                        if(mess.userName == settings.userName){
-                            const mess = {
-                                type: "msg",
-                                isSent: true,
-                                message: mess.message,
-                                date: mess.date
-                            }  
-                            newm.push((mess))
-                        }else{
-                            const mess = {
-                                type: "msg",
-                                isSent: false,
-                                message: mess.message,
-                                date: mess.date,
-                                pdp: mess.pdp,
-                                name: mess.userName
-                            }  
-    
-                           
-                            newm.push((mess))
-                        }
-                    }
-                 
-               
-                    
-                })
-                setRoomInfos(roomInfos => ({
-                    ...roomInfos,
-                    messages: newm
-                }));
-            }
-        
-        
-        
-        });
-    }
-    const getM = () => {
-        socketRef.current.emit('get messages', roomID, (messages) => {
-            console.log('Messages:', messages);
-        });
-    }
-
     const joinRoom = () =>{
       
         socketRef.current.emit("join room", [roomID,settings.publicKey]);
-        setRoomInfos({...roomInfos, roomID: roomID})
-        const newm = []
-        // const messagesFromGun = getMessages(socketRef, roomID)
-        // console.log(messagesFromGun)
-        // getMessag()
-        // if(messagesFromGun){
-        //     messagesFromGun.forEach(mess => {
-        //         newm.push(mess)
-        //     })
-        //     setRoomInfos(roomInfos => ({
-        //         ...roomInfos,
-        //         messages: newm
-        //     }));
-        // }
-      
+        setRoomInfos({...roomInfos, roomID: roomID})    
 
         socketRef.current.on('all users', users => {
             
@@ -159,7 +95,7 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
 
 
         
-        // setRoomID("")
+        setRoomID("")
     }
     function createPeer(userToSignal, callerID, stream) {
         const peer = new Peer({
@@ -191,7 +127,7 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
                     name: jsondata.userName,
                     isSent: false,
                     imgContent: jsondata.imgSrc,
-                    date: date.getHours() + ":" + date.getMinutes()
+                    date: date.getHours() + ":"+ (date.getMinutes() < 10 ? "0": "") + date.getMinutes()
                 })
             }else if(jsondata.type == "msg"){
                 newm.push({
@@ -201,7 +137,7 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
                     isSent: false,
                     message: jsondata.message,
                     // message: AES.decrypt(jsondata.message, "secret").toString(enc.Utf8),
-                    date: date.getHours() + ":" + date.getMinutes()
+                    date: date.getHours() + ":" + (date.getMinutes() < 10 ? "0": "")+ date.getMinutes()
                 })
             }else if(jsondata.type == "file"){
                 newm.push({
@@ -212,7 +148,7 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
                     src: jsondata.src,
                     fileName: jsondata.fileName,
                     fileSize: jsondata.fileSize,
-                    date: date.getHours() + ":" + date.getMinutes()
+                    date: date.getHours() + ":"+ (date.getMinutes() < 10 ? "0": "") + date.getMinutes()
                 })
             }
             
@@ -266,7 +202,7 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
                     name: jsondata.userName,
                     isSent: false,
                     imgContent: jsondata.imgSrc,
-                    date: date.getHours() + ":" + date.getMinutes()
+                    date: date.getHours() + ":" + (date.getMinutes() < 10 ? "0": "")+ date.getMinutes()
                 })
             }else if(jsondata.type == "msg"){
                 newm.push({
@@ -287,7 +223,7 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
                     src: jsondata.src,
                     fileName: jsondata.fileName,
                     fileSize: jsondata.fileSize,
-                    date: date.getHours() + ":" + date.getMinutes()
+                    date: date.getHours() + ":"+ (date.getMinutes() < 10 ? "0": "") + date.getMinutes()
                 })
             }
             
@@ -302,23 +238,23 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
         return peer;
     }
 
-   
+    
 
  
    
     return (
-        <div class={"hidden md:w-1/3 lg:w-1/4 bg-[#fdfdfd] border-[#d8dae0] dark:border-[#3f465a] border-r-[1px] dark:bg-[#1a202c]  md:block"}>
-    
+        <div class={"transition-all md:w-1/3 lg:w-1/4 bg-[#fdfdfd] border-[#d8dae0] dark:border-[#3f465a] border-r-[1px] dark:bg-[#1a202c]  md:block"}>
+       
         <div class="h-24 bg-[#fdfdfd] border-[#d8dae0] border-b-[1px] flex items-center justify-between px-4 dark:bg-[#1a202c] dark:border-[#3f465a]">
             <div class="flex items-center gap-5">
                 <img src={settings.profilePicture} alt="" class="w-16 h-16 rounded-full"/>
-                <p class="font-bold text-lg text-gray-800 dark:text-gray-200 cursor-pointer" onClick={() => getM()}>{settings.userName}</p>
+                <p class="font-bold text-lg text-gray-800 dark:text-gray-200" >{settings.userName}</p>
             </div>
             <Settings settings={settings} setSettings={setSettings} language={language}/>
             
 
         </div>
-     
+       
         <div class="h-14 bg-[#f1f2f4] flex items-center justify-center border-b-[1px] dark:bg-[#262d3b] dark:border-[#3f465a]">
             <div class=" bg-white h-8 rounded-2xl px-5 flex items-center justify-between gap-3 w-full mx-7 dark:bg-[#3e4457]">
             <div class="flex items-center gap-5 w-full">
@@ -327,10 +263,18 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
             </div>
             <FontAwesomeIcon icon={faRotate} size="lg" className="text-center dark:text-gray-200 cursor-pointer" onClick={() => randomRoomID()}/>
             </div>
+            {settings.leftSectionStatus ? (
+                <FontAwesomeIcon icon={faChevronUp} size="lg" className="md:hidden text-center mr-4 text-[#1786d8] cursor-pointer" onClick={() => setSettings({...settings, leftSectionStatus: !settings.leftSectionStatus})}/>
+
+            ): (
+                <FontAwesomeIcon icon={faChevronDown} size="lg" className="md:hidden text-center mr-4 text-[#1786d8] cursor-pointer" onClick={() => setSettings({...settings, leftSectionStatus: !settings.leftSectionStatus})}/>
+
+            )}
+
         </div>
-     
-        <div class="items-center">  
-            <h2 className='text-gray-600 text-lg ml-3 my-3 font-semibold dark:text-gray-200 cursor-pointer' >Online peers:</h2>
+        {/* {settings.leftSectionStatus &&  */}
+            <div class="items-center">  
+            <h2 className='text-gray-600 text-lg ml-3 my-3 font-semibold dark:text-gray-200 cursor-pointer' >{language.online_peers}</h2>
          
             {roomInfos.peers.map((peer)=>{
                 return (
@@ -367,7 +311,9 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
 
             
     
-        </div>
+            </div>
+        {/* } */}
+        
      
     </div>
     );

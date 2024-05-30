@@ -1,15 +1,18 @@
 "use client";
+import Gun from 'gun';
 import { faCamera,faCircle,faEllipsis,faPlus, faRotate } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Settings from './Settings'
 import { useState,useEffect,useRef } from 'react';
 import Peer from "simple-peer";
 import useSound from 'use-sound'
-// import mySound from '../../public/notif_sound.mp3'
 import { v1 as uuid } from 'uuid';
-import {encryptMessage, decryptMessage} from '../services/encryption'
 import { AES, enc } from 'crypto-js';
-//qeG8xsaSCCMOyoP8nH57p9TgCCmeu86LC1i+1PafkFlOAzzI4oJIIjgO2dYoocnI
+import {encryptMessage, decryptMessage} from '../services/encryption'
+import { getMessages } from '../services/storage';
+
+
+const gun = Gun(['http://localhost:8000/gun']);
 
 export default function Home({language, settings,setSettings, socketRef, roomInfos, setRoomInfos}) {
 
@@ -25,14 +28,81 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
             playSound()
         }
     }
+
+    const getMessag = () => {
+        console.log("aaaa")
+        socketRef.current.emit('get messages', roomID, (messages) => {
+            console.log(messages)
+            if(messages){
+                const newm = []
+                messages.forEach(mess => {
+                    if(mess){
+                        if(mess.userName == settings.userName){
+                            const mess = {
+                                type: "msg",
+                                isSent: true,
+                                message: mess.message,
+                                date: mess.date
+                            }  
+                            newm.push((mess))
+                        }else{
+                            const mess = {
+                                type: "msg",
+                                isSent: false,
+                                message: mess.message,
+                                date: mess.date,
+                                pdp: mess.pdp,
+                                name: mess.userName
+                            }  
+    
+                           
+                            newm.push((mess))
+                        }
+                    }
+                 
+               
+                    
+                })
+                setRoomInfos(roomInfos => ({
+                    ...roomInfos,
+                    messages: newm
+                }));
+            }
+        
+        
+        
+        });
+    }
+    const getM = () => {
+        socketRef.current.emit('get messages', roomID, (messages) => {
+            console.log('Messages:', messages);
+        });
+    }
+
     const joinRoom = () =>{
       
-        socketRef.current.emit("join room", roomID);
+        socketRef.current.emit("join room", [roomID,settings.publicKey]);
         setRoomInfos({...roomInfos, roomID: roomID})
+        const newm = []
+        // const messagesFromGun = getMessages(socketRef, roomID)
+        // console.log(messagesFromGun)
+        // getMessag()
+        // if(messagesFromGun){
+        //     messagesFromGun.forEach(mess => {
+        //         newm.push(mess)
+        //     })
+        //     setRoomInfos(roomInfos => ({
+        //         ...roomInfos,
+        //         messages: newm
+        //     }));
+        // }
+      
+
         socketRef.current.on('all users', users => {
             
-            users.forEach(userID => {
-
+            users.forEach(user => {
+                const userID = user[0]
+                const publicKey = user[1]
                 const peer = createPeer(userID, socketRef.current.id)
                 peersRef.current.push({
                     peerID: userID,
@@ -44,7 +114,8 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
                     id: userID,
                     profile_picture: "/a.jpg",
                     name: userID,
-                    peer: peer
+                    peer: peer,
+                    publicKey: publicKey
                  
                  })
                 setRoomInfos(roomInfos => ({
@@ -71,6 +142,7 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
                 profile_picture: "/a.jpg",
                 name: payload.callerID,
                 peer:peer,
+                publicKey: payload.publicKey
              
              })
             setRoomInfos(roomInfos => ({
@@ -87,7 +159,7 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
 
 
         
-        setRoomID("")
+        // setRoomID("")
     }
     function createPeer(userToSignal, callerID, stream) {
         const peer = new Peer({
@@ -107,21 +179,8 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
             socketRef.current.emit("sending signal", { userToSignal, callerID, signal })
         })
         peer.on('data', data => {
-            // console.log(JSON.parse(data.toString()))
-            // console.log(roomInfos)
 
-            
-            // const blob = new Blob([jsondata.imgSrc]);
-            //     const url = URL.createObjectURL(blob);
-            //     const link = document.createElement('a');
-            //     link.href = url;
-            //     link.download = jsondata.fileName;
-            //     link.click();
-            //     URL.revokeObjectURL(url);
-
-            // const jsondata = JSON.parse(data.toString())
-            // const newm = roomInfos.messages
-            const jsondata = JSON.parse(AES.decrypt(data.toString(), "secret").toString(enc.Utf8))
+            const jsondata = JSON.parse(data.toString())
             const newm = roomInfos.messages
             const date = new Date()
             if(jsondata.type == "img"){
@@ -187,31 +246,7 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
             socketRef.current.emit("returning signal", { signal, callerID })
         })
         peer.on('data', data => {
-            // const jsondata = JSON.parse(data.toString())
-//             let uint8Array = new TextEncoder('utf-8').encode(jsondata.imgSrc);
-// let arrayBuffer = uint8Array.buffer;
 
-//             const blob = new Blob([arrayBuffer]);
-//             const url = URL.createObjectURL(blob);
-//             const link = document.createElement('a');
-//             link.href = url;
-//             link.download = jsondata.fileName;
-//             link.click();
-//             URL.revokeObjectURL(url);
-            // const jsondata = JSON.parse(data.toString())
-            // const newm = roomInfos.messages
-          
-            // const date = new Date()
-            // if(jsondata.type = "msg"){
-            //     newm.push({
-            //         type: "msg",
-            //         pdp: jsondata.pdp,
-            //         name: jsondata.userName,
-            //         isSent: false,
-            //         message: jsondata.message,
-            //         date: date.getHours() + ":" + date.getMinutes()
-            //     })
-            // }
             
             console.log(roomInfos)
     
@@ -220,7 +255,8 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
             //     messages: newm
             // }));
             // playNotificationSound()
-            const jsondata = JSON.parse(AES.decrypt(data.toString(), "secret").toString(enc.Utf8))
+            const jsondata = JSON.parse(data.toString())
+            // const jsondata = JSON.parse(decryptMessage(settings.privateKey,data.toString()).toString(enc.Utf8))
             const newm = roomInfos.messages
             const date = new Date()
             if(jsondata.type == "img"){
@@ -266,6 +302,7 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
         return peer;
     }
 
+   
 
  
    
@@ -275,7 +312,7 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
         <div class="h-24 bg-[#fdfdfd] border-[#d8dae0] border-b-[1px] flex items-center justify-between px-4 dark:bg-[#1a202c] dark:border-[#3f465a]">
             <div class="flex items-center gap-5">
                 <img src={settings.profilePicture} alt="" class="w-16 h-16 rounded-full"/>
-                <p class="font-bold text-lg text-gray-800 dark:text-gray-200">{settings.userName}</p>
+                <p class="font-bold text-lg text-gray-800 dark:text-gray-200 cursor-pointer" onClick={() => getM()}>{settings.userName}</p>
             </div>
             <Settings settings={settings} setSettings={setSettings} language={language}/>
             
@@ -293,7 +330,7 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
         </div>
      
         <div class="items-center">  
-            <h2 className='text-gray-600 text-lg ml-3 my-3 font-semibold dark:text-gray-200'>Online peers:</h2>
+            <h2 className='text-gray-600 text-lg ml-3 my-3 font-semibold dark:text-gray-200 cursor-pointer' >Online peers:</h2>
          
             {roomInfos.peers.map((peer)=>{
                 return (

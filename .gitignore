@@ -8,7 +8,7 @@
 
 # testing
 /coverage
-
+/radata
 /src/components/EmptySection.js
 
 # next.js

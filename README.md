@@ -9,10 +9,11 @@
 <h4 align="center">A peer-to-peer (P2P) chat app built with <a href="https://nextjs.org" target="_blank">Next.js</a>, allowing users to communicate directly without a central server, using WebRTC for real-time communication.</h4>
 
 <p align="center">
-![GitHub last commit](https://img.shields.io/github/last-commit/furycodz/p2p-chatapp)
-![GitHub package.json version](https://img.shields.io/github/package-json/v/furycodz/p2p-chatapp)
-![GitHub package.json prod dependency version](https://img.shields.io/github/package-json/dependency-version/furycodz/p2p-chatapp/react)
-![GitHub Repo stars](https://img.shields.io/github/stars/furycodz/p2p-chatapp)
+<img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/furycodz/p2p-chatapp">
+<img alt="GitHub package.json version" src="https://img.shields.io/github/package-json/v/furycodz/p2p-chatapp">
+<img alt="GitHub package.json prod dependency version" src="https://img.shields.io/github/package-json/dependency-version/furycodz/p2p-chatapp/react">
+<img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/furycodz/p2p-chatapp">
+
 
 </p>
 

@@ -31,7 +31,7 @@
 
 ## Introduction
 
-We are building an exciting peer-to-peer securechat application for our first year development project. The web app connects people and groups of people of up to ## members and provides both file and image transfer functionalities, as well as audio and video calls between peers.
+We are building an exciting peer-to-peer securechat application for our first year development project. The web app connects people and groups of people of up to 10 members and provides both file and image transfer functionalities, as well as audio and video calls between peers.
 
 In order to make sure our application functions correctly, we are using multiple protocols and functionalities in order to secure the basic foundations of a chat application. Notably, storage and peer discovery are important aspects to which we took time to find technical solutions. 
 
@@ -81,7 +81,7 @@ This project is designed to be highly responsive, ensuring a seamless user exper
 
 ## Getting Started
 
-First, run the development server:
+First, run the client:
 
 ```bash
 npm run dev
@@ -92,7 +92,11 @@ pnpm dev
 # or
 bun dev
 ```
-
+Then, you need to run the signaling Server:
+```bash
+cd signaling
+npm run dev
+```
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 
@@ -100,7 +104,8 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 You can run this application using Docker
 
 ```bash
-
+docker pull badrelhouari/docker-chatapp
+docker run --name app -p 3000:3000 -d badrelhouari/docker-chatapp
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
@@ -112,4 +117,4 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
 
 ## Demonstration
-Here is a link to the video demonstration of this project: <a href="https://youtube.com" target="_blank">Demo</a>
+Here is a link to the video demonstration of this project: <a href="https://youtu.be/jGN7IZOTA1c" target="_blank">Demo</a>

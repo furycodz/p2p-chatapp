@@ -87,6 +87,7 @@ export default function Home() {
   const language = {
     fr: {
         search_text:"Créer ou rejoindre un groupe",
+        online_peers :"Peers en ligne:",
         settings_name: "Parametres",
         room: "Groupe :",
         not_connected: "Non connecté",

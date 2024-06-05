@@ -151,7 +151,7 @@ export default function ChatSection({socketRef,roomInfos,setRoomInfos, settings,
     //Function to handle message submit and send it to peers
     const handleSubmit = (e) =>{
         if (e.key === 'Enter' && text.length != 0 && text != " ") {
-            console.log(roomInfos.peers[0].publicKey)
+            
        
             roomInfos.peers.forEach(p => {
                 const a = AES.encrypt(text, settings.sharedKey).toString()

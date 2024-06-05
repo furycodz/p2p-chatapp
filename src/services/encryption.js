@@ -1,5 +1,6 @@
 const algorithName = 'RSA-OAEP'
 
+
 const pemEncode = (buffer) => {
     const binary = String.fromCharCode(...new Uint8Array(buffer));
     const base64 = window.btoa(binary);
@@ -48,6 +49,15 @@ export async function decryptMessage(privateKey, encryptedMessage){
       const decryptedString = new TextDecoder().decode(decryptedArrayBuffer)
   
       return decryptedString
+}
+
+
+export function generateSymetricalKey(){
+    const array = new Uint8Array(16); // 16 bytes for AES-128 key
+    window.crypto.getRandomValues(array);
+    const key=  Array.from(array, byte => ('0' + (byte & 0xFF).toString(16)).slice(-2)).join('');
+    
+    return key
 }
 
 function pemToArrayBuffer(pem) {

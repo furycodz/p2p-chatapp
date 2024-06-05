@@ -11,7 +11,7 @@ import { generateKeyPair,encryptMessage } from "../services/encryption"
 export default function Home() {
 
   const socketRef = useRef();
-
+ 
   const [settings,setSettings] = useState({
     darkmode: true,
     lang: 'en',
@@ -21,7 +21,8 @@ export default function Home() {
     profilePicture: "/user.jpg",
     leftSectionStatus: false,
     publicKey: '',
-    privateKey: ''
+    privateKey: '',
+    sharedKey: ''
   })
 
   const [roomInfos, setRoomInfos] = useState({
@@ -32,7 +33,7 @@ export default function Home() {
   })
 
 
-  useEffect(async () => {
+  useEffect(() => {
     if (typeof window !== 'undefined') {
       const sett = JSON.parse(localStorage.getItem('settings'));
       if (sett) {
@@ -41,12 +42,12 @@ export default function Home() {
         }else{
           setSettings(sett);
         }
-        // const key = await generateKeyPair()
-        // setSettings({...sett, publicKey: key[0], privateKey: key[1]})
+        const key = generateKeyPair()
+        setSettings({...sett, publicKey: key[0], privateKey: key[1]})
   
         
       }
-      socketRef.current = io.connect("http://172.20.10.8:8000");
+      socketRef.current = io.connect("http://localhost:8000");
     }
     
     

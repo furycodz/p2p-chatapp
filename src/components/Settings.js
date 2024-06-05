@@ -31,8 +31,8 @@ export default function ChatSection({language, settings, setSettings}) {
         <Modal className="" isOpen={isOpen} onRequestClose={() => setIsOpen(false)} style={customStyles}> 
         <div className="rounded-3xl flex flex-col gap-y-4">
             <h2 className="font-bold w-full border-b-[1px] border-gray-400 mb-4 py-2 text-lg ">{language.settings_name}</h2>
-            <div class="flex justify-between items-center gap-7">
-                <div class="flex gap-5 items-center">
+            <div className="flex justify-between items-center gap-7">
+                <div className="flex gap-5 items-center">
                     <FontAwesomeIcon icon={faPlus} size="xl" className="text-[#1786d8]  p-3 bg-gray-100 rounded-lg " />
                    
                         <h2 className="font-bold text-[#1d425d]" >{language.settings_username}</h2>
@@ -41,12 +41,12 @@ export default function ChatSection({language, settings, setSettings}) {
                 </div>
                
                 
-                <input value={settings.userName} onChange={(e) => {setSettings({...settings, userName: e.target.value})}} type="text" class="w-[60%] h-12 rounded-xl bg-[#e6e6e6] text-gray-700 outline-none px-6 " placeholder="Enter your username"/>
+                <input value={settings.userName} onChange={(e) => {setSettings({...settings, userName: e.target.value})}} type="text" className="w-[60%] h-12 rounded-xl bg-[#e6e6e6] text-gray-700 outline-none px-6 " placeholder="Enter your username"/>
                 
               
             </div>
-            <div class="flex justify-between items-center gap-7">
-                <div class="flex gap-5 items-center">
+            <div className="flex justify-between items-center gap-7">
+                <div className="flex gap-5 items-center">
                     <FontAwesomeIcon icon={faPlus} size="xl" className="text-[#1786d8]  p-3 bg-gray-100 rounded-lg " />
                    
                         <h2 className="font-bold text-[#1d425d] w-fit whitespace-nowrap" >{language.settings_profile_picture}</h2>
@@ -55,13 +55,13 @@ export default function ChatSection({language, settings, setSettings}) {
                 </div>
                
                 
-                <input  onChange={(e) => setSettings({...settings, profilePicture: e.target.value})} value={settings.profilePicture} type="text" class="lg:w-[400px] h-12 rounded-xl bg-[#e6e6e6] text-gray-700 outline-none px-6 " placeholder="Enter your profile picture link"/>
+                <input  onChange={(e) => setSettings({...settings, profilePicture: e.target.value})} value={settings.profilePicture} type="text" className="lg:w-[400px] h-12 rounded-xl bg-[#e6e6e6] text-gray-700 outline-none px-6 " placeholder="Enter your profile picture link"/>
                 
               
             </div>
             
-            <div class="flex justify-between items-center gap-7">
-                <div class="flex gap-5 items-center">
+            <div className="flex justify-between items-center gap-7">
+                <div className="flex gap-5 items-center">
                     <FontAwesomeIcon icon={faPlus} size="xl" className="text-[#1786d8]  p-3 bg-gray-100 rounded-lg " />
                     
                         <h2 className="font-bold text-[#1d425d]" >{language.settings_darkmode}</h2>
@@ -70,15 +70,15 @@ export default function ChatSection({language, settings, setSettings}) {
                     
                 </div>
                
-                <label class="switch">
+                <label className="switch">
                     <input type="checkbox" onClick={(e) => {setSettings({...settings, darkmode: !settings.darkmode})}} defaultChecked={settings.darkmode}/>
-                    <span class="slider round"></span>
+                    <span className="slider round"></span>
                 </label>
            
               
             </div>
-            <div class="flex justify-between items-center gap-7">
-                <div class="flex gap-5 items-center">
+            <div className="flex justify-between items-center gap-7">
+                <div className="flex gap-5 items-center">
                     <FontAwesomeIcon icon={faPlus} size="xl" className="text-[#1786d8]  p-3 bg-gray-100 rounded-lg " />
                  
                         <h2 className="font-bold text-[#1d425d]" >{language.settings_notifications}</h2>
@@ -87,38 +87,38 @@ export default function ChatSection({language, settings, setSettings}) {
                     
                 </div>
                
-                <label class="switch">
+                <label className="switch">
                     <input type="checkbox" onClick={(e) => {setSettings({...settings, notifications: !settings.notifications})}} defaultChecked={settings.notifications}/>
-                    <span class="slider round"></span>
+                    <span className="slider round"></span>
                 </label>
            
               
             </div>
-            <div class="flex justify-between items-center gap-7">
-                <div class="flex gap-5 items-center">
+            <div className="flex justify-between items-center gap-7">
+                <div className="flex gap-5 items-center">
                     <FontAwesomeIcon icon={faPlus} size="xl" className="text-[#1786d8]  p-3 bg-gray-100 rounded-lg " />
                         <h2 className="font-bold text-[#1d425d]" >{language.settings_message_sound}</h2>
                         
                 </div>
                
-                <label class="switch">
+                <label className="switch">
                     <input type="checkbox" onClick={(e) => {setSettings({...settings, notificationSound: !settings.notificationSound})}} defaultChecked={settings.notificationSound}/>
-                    <span class="slider round"></span>
+                    <span className="slider round"></span>
                 </label>
            
               
             </div>
 
-            <div class="flex justify-between items-center gap-7">
-                <div class="flex gap-5 items-center">
+            <div className="flex justify-between items-center gap-7">
+                <div className="flex gap-5 items-center">
                 <FontAwesomeIcon icon={faPlus} size="xl" className="text-[#1786d8]  p-3 bg-gray-100 rounded-lg " />
                     <h2 className="font-bold text-[#1d425d]" >{language.settings_language}</h2>
                     
                 </div>
                 
-                <div class="relative h-10 w-32 ">
+                <div className="relative h-10 w-32 ">
                 <select defaultValue={settings.lang} onClick={(e) => setSettings({...settings, lang: e.target.value})} 
-                    class="peer h-full w-full rounded-[7px] border border-blue-gray-200 border-t-transparent bg-transparent px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 empty:!bg-gray-900 focus:border-2 focus:border-gray-900 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50">
+                    className="peer h-full w-full rounded-[7px] border border-blue-gray-200 border-t-transparent bg-transparent px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 empty:!bg-gray-900 focus:border-2 focus:border-gray-900 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50">
                 
                     <option value="en">English</option>
                     <option value="fr">Francais</option>
@@ -126,7 +126,7 @@ export default function ChatSection({language, settings, setSettings}) {
                     <option value="ar">العربية</option>
                 </select>
                 <label
-                    class="before:content[' '] after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none text-[11px] font-normal leading-tight text-blue-gray-400 transition-all before:pointer-events-none before:mt-[6.5px] before:mr-1 before:box-border before:block before:h-1.5 before:w-2.5 before:rounded-tl-md before:border-t before:border-l before:border-blue-gray-200 before:transition-all after:pointer-events-none after:mt-[6.5px] after:ml-1 after:box-border after:block after:h-1.5 after:w-2.5 after:flex-grow after:rounded-tr-md after:border-t after:border-r after:border-blue-gray-200 after:transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[3.75] peer-placeholder-shown:text-blue-gray-500 peer-placeholder-shown:before:border-transparent peer-placeholder-shown:after:border-transparent peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-gray-900 peer-focus:before:border-t-2 peer-focus:before:border-l-2 peer-focus:before:border-gray-900 peer-focus:after:border-t-2 peer-focus:after:border-r-2 peer-focus:after:border-gray-900 peer-disabled:text-transparent peer-disabled:before:border-transparent peer-disabled:after:border-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">
+                    className="before:content[' '] after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none text-[11px] font-normal leading-tight text-blue-gray-400 transition-all before:pointer-events-none before:mt-[6.5px] before:mr-1 before:box-border before:block before:h-1.5 before:w-2.5 before:rounded-tl-md before:border-t before:border-l before:border-blue-gray-200 before:transition-all after:pointer-events-none after:mt-[6.5px] after:ml-1 after:box-border after:block after:h-1.5 after:w-2.5 after:flex-grow after:rounded-tr-md after:border-t after:border-r after:border-blue-gray-200 after:transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[3.75] peer-placeholder-shown:text-blue-gray-500 peer-placeholder-shown:before:border-transparent peer-placeholder-shown:after:border-transparent peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-gray-900 peer-focus:before:border-t-2 peer-focus:before:border-l-2 peer-focus:before:border-gray-900 peer-focus:after:border-t-2 peer-focus:after:border-r-2 peer-focus:after:border-gray-900 peer-disabled:text-transparent peer-disabled:before:border-transparent peer-disabled:after:border-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">
                     {language.settings_select_language}
                 </label>
                 </div>
@@ -135,12 +135,12 @@ export default function ChatSection({language, settings, setSettings}) {
            
               
             </div>
-            {/* <div class="flex gap-5 items-center">
+            <div className="flex gap-5 items-center">
               
                     <h2 className="font-bold text-[#1d425d]" >ihoj</h2>
-                    <h2 className="font-bold text-[#1d425d]" >Private Key: {settings.publicKey}</h2>
+                    <h2 className="font-bold text-[#1d425d]" >Private Key: {settings.sharedKey}</h2>
                     
-                </div> */}
+                </div>
         </div> 
     </Modal>
     </div>

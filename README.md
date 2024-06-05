@@ -9,12 +9,21 @@
 <h4 align="center">A peer-to-peer (P2P) chat app built with <a href="https://nextjs.org" target="_blank">Next.js</a>, allowing users to communicate directly without a central server, using WebRTC for real-time communication.</h4>
 
 <p align="center">
+![GitHub last commit](https://img.shields.io/github/last-commit/furycodz/p2p-chatapp)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/furycodz/p2p-chatapp)
+![GitHub package.json prod dependency version](https://img.shields.io/github/package-json/dependency-version/furycodz/p2p-chatapp/react)
+![GitHub Repo stars](https://img.shields.io/github/stars/furycodz/p2p-chatapp)
+
+</p>
+
+<p align="center">
   <a href="#introduction">Introduction</a> •
   <a href="#architecture">Architecture</a> •
-  <a href="#features">Features</a> •
-  <a href="#credits">Getting Started</a> •
-  <a href="#related">Deploy on Vercel</a> •
-  <a href="#license">License</a>
+  <a href="#key-features">Key Features</a> •
+  <a href="#getting-started">Getting Started</a> •
+  <a href="#run-with-docker">Run with Docker</a> •
+  <a href="#deploy-on-vercel">Deploy on Vercel</a> •
+  <a href="#demonstration">Demonstration</a>
 </p>
 
 
@@ -28,44 +37,46 @@ In order to make sure our application functions correctly, we are using multiple
 ## Architecture
 
 - This chat application is based on a decentralized peer-to-peer architecture.
-- We considered many protocols and methods to secure multiple tasks.
 - We chose Next.js for the front end due to its robust features like server-side rendering, static site generation, and seamless integration with React.
-- These features enhance performance and SEO.
+  - These features enhance performance and SEO.
 - Tailwind CSS was selected for its utility-first approach, allowing rapid and efficient styling.
-- Tailwind's customizable design system promotes consistency and reduces development time.
 - Together, these technologies provide a scalable, high-performance, and visually appealing user experience.
 - We chose WebRTC for peer discovery to enable real-time communication directly between users' browsers.
 - WebRTC ensures low-latency, high-quality audio and video transmission without plugins.
 - A signaling server is indispensable for establishing peer-to-peer connections.
-- The signaling server facilitates the exchange of connection information and media metadata between peers.
 - Without this server, peers cannot negotiate direct communication connections.
 - We use RSA (asymmetric) and AES (symmetric) encryption methods for data encryption.
-- RSA is used for securely exchanging keys between users.
-- Once the secure channel is established, AES is used for actual data transmission.
-- AES is efficient and fast, providing robust security and high performance.
-- This hybrid approach ensures secure key exchange and strong data encryption.
-- We chose GunDB for the storage part, leveraging its integration with IPFS.
-- GunDB provides decentralized, resilient, and efficient data storage.
-- GunDB's graph-based structure allows real-time data synchronization and offline capabilities.
-- Using IPFS enhances data availability, integrity, and redundancy across a peer-to-peer network.
-- This combination ensures robust, scalable, and fault-tolerant storage, making user data consistently accessible and secure.
+- RSA is used for securely exchanging keys between users, Once the secure channel is established, AES is used for actual data transmission..
+- We chose GunDB for the storage part, leveraging its integration with IPFS, which provides decentralized, resilient, and efficient data storage.
+  - GunDB's graph-based structure allows real-time data synchronization and offline capabilities.
+  - Using IPFS enhances data availability, integrity, and redundancy across a peer-to-peer network.
+  - This combination ensures robust, scalable, and fault-tolerant storage, making user data consistently accessible and secure.
 
 
 ## Key Features
-
+- Realtime communication
+- Allow multiple users in a room
 - Secure Messaging
+  - Encrypting messages with AES-256
 - File transfer
-- Dark/light mode
-- Group messaging
-- English and French language
+- Dark & light mode
+- Responsive for both Mobile & Desktop users
+- Support mutliple Languages
+  - French, English, Arabic and even Amazigh
 - Image sending
-- 
+- Notifications System with Sound
+- Message history
+  - You can see messages in the room even if you weren't connected
+- Changing Username & Profile Picture
 
 ## Responsive 
 This project is designed to be highly responsive, ensuring a seamless user experience across devices of all sizes. Whether you're accessing the project on a desktop, tablet, or smartphone, you can expect the same level of functionality and performance.
+<div class="flex">
+    <img src="public/desktop.png" alt="Markdownify" height="300">
+    <img src="public/mobile.png" alt="Markdownify" height="300">
+    
+</div>
 
-![screenshot](public/mobile.png)
-![screenshot](public/desktop.png)
 
 ## Getting Started
 

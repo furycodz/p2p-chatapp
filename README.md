@@ -1,13 +1,22 @@
 
 <h1 align="center">
-  <br>
-  
+<img src="https://raw.githubusercontent.com/amitmerchant1990/electron-markdownify/master/app/img/markdownify.png" alt="Markdownify" width="200">
   <br>
   P2P Chat App
   <br>
 </h1>
 
-<h4 align="center">A Simple P2P Chat app build with <a href="https://nextjs.org" target="_blank">Next.js</a>.</h4>
+<h4 align="center">A peer-to-peer (P2P) chat app built with <a href="https://nextjs.org" target="_blank">Next.js</a>, allowing users to communicate directly without a central server, using WebRTC for real-time communication.</h4>
+
+<p align="center">
+  <a href="#key-features">Key Features</a> •
+  <a href="#how-to-use">How To Use</a> •
+  <a href="#download">Download</a> •
+  <a href="#credits">Credits</a> •
+  <a href="#related">Related</a> •
+  <a href="#license">License</a>
+</p>
+
 
 ## Table of Contents
 

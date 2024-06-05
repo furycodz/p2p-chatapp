@@ -312,12 +312,12 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
 
         </div>
         {/* {settings.leftSectionStatus &&  */}
-            <div className="hidden md:flex items-center">  
+            <div className="hidden md:block items-center">  
             <h2 className='text-gray-600 text-lg ml-3 my-3 font-semibold dark:text-gray-200 cursor-pointer' >{language.online_peers} </h2>
          
             {roomInfos.peers.map((peer, index)=>{
                 return (
-                    <div key={index} className=" bg-[#e6f2fa] dark:hover:bg-[#272b3a] dark:bg-[#313648] border-[#d8dae0] dark:border-[#3f465a] border-b-[1px] h-24  items-center justify-between" >
+                    <div key={index} className="flex bg-[#e6f2fa] dark:hover:bg-[#272b3a] dark:bg-[#313648] border-[#d8dae0] dark:border-[#3f465a] border-b-[1px] h-24  items-center justify-between" >
                         <div className="flex items-center">
                             <div className="mx-4">
                                 {/* <img src={peer.profile_picture} alt="" className="w-16 rounded-2xl"/> */}

@@ -9,20 +9,15 @@
 <h4 align="center">A peer-to-peer (P2P) chat app built with <a href="https://nextjs.org" target="_blank">Next.js</a>, allowing users to communicate directly without a central server, using WebRTC for real-time communication.</h4>
 
 <p align="center">
-  <a href="#key-features">Key Features</a> •
-  <a href="#how-to-use">How To Use</a> •
-  <a href="#download">Download</a> •
-  <a href="#credits">Credits</a> •
-  <a href="#related">Related</a> •
+  <a href="#introduction">Introduction</a> •
+  <a href="#architecture">Architecture</a> •
+  <a href="#features">Features</a> •
+  <a href="#credits">Getting Started</a> •
+  <a href="#related">Deploy on Vercel</a> •
   <a href="#license">License</a>
 </p>
 
 
-## Table of Contents
-
-- [Introduction](#introduction)
-- [Architecture](#architecture)
-- [Features](#features)
 
 ## Introduction
 
@@ -59,15 +54,18 @@ In order to make sure our application functions correctly, we are using multiple
 ## Key Features
 
 - Secure Messaging
-- Audio calls
-- Video calls
 - File transfer
 - Dark/light mode
 - Group messaging
-- Blocking users
 - English and French language
 - Image sending
 - 
+
+## Responsive 
+This project is designed to be highly responsive, ensuring a seamless user experience across devices of all sizes. Whether you're accessing the project on a desktop, tablet, or smartphone, you can expect the same level of functionality and performance.
+
+![screenshot](public/mobile.png)
+![screenshot](public/desktop.png)
 
 ## Getting Started
 
@@ -85,10 +83,21 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+
+## Run with Docker
+You can run this application using Docker
+
+```bash
+
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
 ## Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
 
-
+## Demonstration
+Here is a link to the video demonstration of this project: <a href="https://youtube.com" target="_blank">Demo</a>

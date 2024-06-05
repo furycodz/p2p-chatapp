@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Romanesco } from 'next/font/google';
 import { useState,useEffect } from 'react';
 import { useFilePicker, FileAmountLimitValidator } from 'use-file-picker';
-import Image from './messages/Image';
+
 import {encryptMessage, decryptMessage} from '../services/encryption'
 import { AES, enc } from 'crypto-js';
 import { storeMessage, getMessages } from '../services/storage'
@@ -364,7 +364,7 @@ export default function ChatSection({socketRef,roomInfos,setRoomInfos, settings,
                 <FontAwesomeIcon icon={faPlus} size="lg" className="text-[#1786d8] bg-[#f1f2f4] p-4 rounded-3xl dark:bg-[#262d3b] cursor-pointer" onClick={() => openFilePicker()}/>
 
                 {/* <i className="fa-solid fa-plus text-[#1786d8] bg-[#f1f2f4] p-4 rounded-3xl" ></i> */}
-                <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => {handleSubmit(e)}} type="text" className=" cursor-not-allowed w-[83%] lg:w-[90%] h-12 rounded-3xl bg-[#f1f2f4] text-gray-700 outline-none px-6 dark:bg-[#262d3b] dark:text-white" placeholder={language.input_text}/>
+                <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => {handleSubmit(e)}} type="text" className="  w-[83%] lg:w-[90%] h-12 rounded-3xl bg-[#f1f2f4] text-gray-700 outline-none px-6 dark:bg-[#262d3b] dark:text-white" placeholder={language.input_text}/>
                 {/* <i className="fa-solid fa-microphone text-[24px]"></i>
                 <i className="fa-solid fa-camera text-[24px]"></i> */}
                 {/* <FontAwesomeIcon size="lg" icon={faMicrophone} className="dark:text-gray-200" onClick={() => getMessag()}/>

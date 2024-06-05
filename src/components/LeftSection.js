@@ -1,15 +1,15 @@
 "use client";
 import Gun from 'gun';
-import { faCamera,faChevronDown,faChevronUp,faCircle,faEllipsis,faPlus, faRotate } from '@fortawesome/free-solid-svg-icons'
+import { faChevronDown,faChevronUp,faCircle,faEllipsis,faPlus, faRotate } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Settings from './Settings'
-import { useState,useEffect,useRef } from 'react';
+import { useState,useRef } from 'react';
 import Peer from "simple-peer";
 import useSound from 'use-sound'
 import { v1 as uuid } from 'uuid';
 import { AES, enc } from 'crypto-js';
-import {encryptMessage, decryptMessage, generateSymetricalKey} from '../services/encryption'
-import { getMessages } from '../services/storage';
+import { generateSymetricalKey} from '../services/encryption'
+import { sendNotification } from '@/services/notifications';
 
 
 const gun = Gun(['http://localhost:8000/gun']);
@@ -22,20 +22,19 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
     const peersRef = useRef([]);
     const [playSound] = useSound("/notif_sound.mp3")
 
+    //Function to generate a Random RoomID
     const randomRoomID = () => {
         setRoomID(uuid().slice(0,23))
     }
+
+    //Function to play Notification Sound 
     const playNotificationSound = () =>{
         if(settings.notificationSound){
             playSound()
         }
     }
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-        // console.log("wowow")
-        }
-    }, [settings.sharedKey])
-    
+
+    //Function to handle joining a room
     const joinRoom = () =>{
      
         socketRef.current.emit("join room", [roomID,settings.publicKey]);
@@ -46,8 +45,7 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
                 const key = generateSymetricalKey()
                 setSettings({...settings, sharedKey: key})
                 sharedKeyy = key
-                console.log(key)
-                console.log(sharedKeyy)
+              
             }
             users.forEach(user => {
                 const userID = user[0]
@@ -79,7 +77,7 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
         });
 
         socketRef.current.on("user joined", payload => {
-            console.log("hhhh")
+          
             const peer = addPeer(payload.signal, payload.callerID);
          
             peersRef.current.push({
@@ -123,9 +121,7 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
         
         setRoomID("")
     }
-    const showPublicKeys = () => {
-        console.log(roomInfos.peers)
-    }
+    //Function to create a new Peer & handle data receiving
     function createPeer(userToSignal, callerID, stream) {
         const peer = new Peer({
             initiator: true,
@@ -149,17 +145,19 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
             const date = new Date()
          
             if(jsondata.type == "img"){
-               
+                sendNotification("You have received an image.")
                 newm.push({
                     type: "img",
                     pdp: jsondata.pdp,
                     name: jsondata.userName,
                     isSent: false,
-                    imgContent: jsondata.imgSrc,
+                    
+                    imgContent: AES.decrypt(jsondata.imgSrc, sharedKeyy).toString(enc.Utf8),
                     date: date.getHours() + ":"+ (date.getMinutes() < 10 ? "0": "") + date.getMinutes()
                 })
             }else if(jsondata.type == "msg"){
-                console.log(sharedKeyy)
+                sendNotification(jsondata.userName+":"+ AES.decrypt(jsondata.message, sharedKeyy).toString(enc.Utf8))
+                
                 newm.push({
                     type: "msg",
                     pdp: jsondata.pdp,
@@ -170,12 +168,14 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
                     date: date.getHours() + ":" + (date.getMinutes() < 10 ? "0": "")+ date.getMinutes()
                 })
             }else if(jsondata.type == "file"){
+                sendNotification("You have received a file.")
                 newm.push({
                     type: "file",
                     pdp: jsondata.pdp,
                     name: jsondata.userName,
                     isSent: false,
-                    src: jsondata.src,
+                    
+                    src: AES.decrypt(jsondata.src, sharedKeyy).toString(enc.Utf8),
                     fileName: jsondata.fileName,
                     fileSize: jsondata.fileSize,
                     date: date.getHours() + ":"+ (date.getMinutes() < 10 ? "0": "") + date.getMinutes()
@@ -191,12 +191,14 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
                 ...roomInfos,
                 messages: newm
             }));
-            // playNotificationSound()
+            if(jsondata.type != "key"){
+                playNotificationSound()
+            }
         })
 
         return peer;
     }
-
+    //Function to add a Peer and handle data receiving
     function addPeer(incomingSignal, callerID, stream) {
         const peer = new Peer({
             initiator: false,
@@ -214,31 +216,22 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
             socketRef.current.emit("returning signal", { signal, callerID })
         })
         peer.on('data', data => {
-            
-            
-    
-            // setRoomInfos(roomInfos => ({
-            //     ...roomInfos,
-            //     messages: newm
-            // }));
-            // playNotificationSound()
             const jsondata = JSON.parse(data.toString())
-        
-           
-            // const jsondata = JSON.parse(decryptMessage(settings.privateKey,data.toString()).toString(enc.Utf8))
             const newm = roomInfos.messages
             const date = new Date()
             if(jsondata.type == "img"){
+                sendNotification("You have received an image.")
                 newm.push({
                     type: "img",
                     pdp: jsondata.pdp,
                     name: jsondata.userName,
                     isSent: false,
-                    imgContent: jsondata.imgSrc,
+                    imgContent: AES.decrypt(jsondata.imgSrc, sharedKeyy).toString(enc.Utf8),
                     date: date.getHours() + ":" + (date.getMinutes() < 10 ? "0": "")+ date.getMinutes()
                 })
             }else if(jsondata.type == "msg"){
-                console.log(sharedKeyy)
+                sendNotification(jsondata.userName+":"+ AES.decrypt(jsondata.message, sharedKeyy).toString(enc.Utf8))
+                
                 newm.push({
                     type: "msg",
                     pdp: jsondata.pdp,
@@ -249,12 +242,13 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
                     date: date.getHours() + ":" + (date.getMinutes() < 10 ? "0": "")+ date.getMinutes()
                 })
             }else if(jsondata.type == "file"){
+                sendNotification("You have received a file.")
                 newm.push({
                     type: "file",
                     pdp: jsondata.pdp,
                     name: jsondata.userName,
                     isSent: false,
-                    src: jsondata.src,
+                    src: AES.decrypt(jsondata.src, sharedKeyy).toString(enc.Utf8),
                     fileName: jsondata.fileName,
                     fileSize: jsondata.fileSize,
                     date: date.getHours() + ":"+ (date.getMinutes() < 10 ? "0": "") + date.getMinutes()
@@ -263,31 +257,28 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
                 setSettings({...settings, sharedKey: jsondata.sharedKey})
                 sharedKeyy = jsondata.sharedKey
                 
-                console.log(sharedKeyy)
             }
             
             setRoomInfos(roomInfos => ({
                 ...roomInfos,
                 messages: newm
             }));
+            if(jsondata.type != "key"){
+                playNotificationSound()
+            }
             
         })
         peer.signal(incomingSignal);
-       
         return peer;
     }
 
-    
-
- 
-   
     return (
         <div className={"transition-all md:w-1/3 lg:w-1/4 bg-[#fdfdfd] border-[#d8dae0] dark:border-[#3f465a] border-r-[1px] dark:bg-[#1a202c]  md:block"}>
        
         <div className="h-24 bg-[#fdfdfd] border-[#d8dae0] border-b-[1px] flex items-center justify-between px-4 dark:bg-[#1a202c] dark:border-[#3f465a]">
             <div className="flex items-center gap-5">
                 <img src={settings.profilePicture} alt="" className="w-16 h-16 rounded-full"/>
-                <p className="font-bold text-lg text-gray-800 dark:text-gray-200" onClick={() => showPublicKeys()}>{settings.userName}</p>
+                <p className="font-bold text-lg text-gray-800 dark:text-gray-200" onClick={() => sendNotification("aaa")}>{settings.userName}</p>
             </div>
             <Settings settings={settings} setSettings={setSettings} language={language}/>
             
@@ -311,7 +302,7 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
             )}
 
         </div>
-        {/* {settings.leftSectionStatus &&  */}
+       
             <div className="hidden md:block items-center">  
             <h2 className='text-gray-600 text-lg ml-3 my-3 font-semibold dark:text-gray-200 cursor-pointer' >{language.online_peers} </h2>
          
@@ -320,7 +311,7 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
                     <div key={index} className="flex bg-[#e6f2fa] dark:hover:bg-[#272b3a] dark:bg-[#313648] border-[#d8dae0] dark:border-[#3f465a] border-b-[1px] h-24  items-center justify-between" >
                         <div className="flex items-center">
                             <div className="mx-4">
-                                {/* <img src={peer.profile_picture} alt="" className="w-16 rounded-2xl"/> */}
+                              
         
                             </div>
                             <div>
@@ -351,7 +342,7 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
             
     
             </div>
-        {/* } */}
+   
         
      
     </div>

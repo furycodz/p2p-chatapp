@@ -2,16 +2,18 @@
 import Image from "next/image";
 import LeftSection from "../components/LeftSection"
 import ChatSection from "../components/ChatSection"
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import io from "socket.io-client";
 import Peer from "simple-peer";
 import { generateUsername } from "unique-username-generator";
 import { generateKeyPair,encryptMessage } from "../services/encryption"
+import { requestPermission } from "@/services/notifications";
 
 export default function Home() {
 
   const socketRef = useRef();
- 
+  
+  // User Settings
   const [settings,setSettings] = useState({
     darkmode: true,
     lang: 'en',
@@ -25,6 +27,7 @@ export default function Home() {
     sharedKey: ''
   })
 
+  // Room settings
   const [roomInfos, setRoomInfos] = useState({
     
     roomID: "",
@@ -32,9 +35,10 @@ export default function Home() {
     peers: []
   })
 
-
+  // React hook to load settings & connect to Signaling server
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      
       const sett = JSON.parse(localStorage.getItem('settings'));
       if (sett) {
         if(sett.publicKey == undefined){
@@ -53,12 +57,13 @@ export default function Home() {
     
   }, []);
 
+  // React hook to save settings to local Storage
   useEffect(() => {
     localStorage.setItem('settings', JSON.stringify(settings));
 
   }, [settings]);
 
-
+  // React hook to handle Dark/Ligh Mode
   useEffect(() => {
    
       if (settings.darkmode) {
@@ -69,6 +74,16 @@ export default function Home() {
      
     }, [settings.darkmode]);
 
+  const requestNotificationPermission = useCallback(requestPermission, [])
+ 
+  // Ask for notification Permission
+  useEffect(() => {
+    if('Notification' in window){
+      requestNotificationPermission()
+    }
+  }, [requestNotificationPermission])
+
+  // App translation to 4 languages
   const language = {
     fr: {
         search_text:"Créer ou rejoindre un groupe",

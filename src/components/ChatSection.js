@@ -1,17 +1,18 @@
 "use client";
-import { faCamera,faChevronRight,faClipboard,faDownload,faFile,faMicrophone,faPaste,faPhone,faPlus, faRotate, faVideo } from '@fortawesome/free-solid-svg-icons'
+import {faDownload,faFile,faPaste,faPlus, faRotate } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Romanesco } from 'next/font/google';
-import { useState,useEffect } from 'react';
-import { useFilePicker, FileAmountLimitValidator } from 'use-file-picker';
 
-import {encryptMessage, decryptMessage} from '../services/encryption'
-import { AES, enc } from 'crypto-js';
-import { storeMessage, getMessages } from '../services/storage'
+import { useState } from 'react';
+import { useFilePicker } from 'use-file-picker';
+
+
+import { AES } from 'crypto-js';
+import { storeMessage } from '../services/storage'
 
 export default function ChatSection({socketRef,roomInfos,setRoomInfos, settings, setSettings, language}) {
     const [text,setText] = useState("")
-    const [fileBase64, setFileBase64] = useState("")
+
+    //Convert a file/image to base64
     function downloadBase64File(base64Data, filename) {
         const [metadata, data] = base64Data.split(';base64,');
        
@@ -39,14 +40,14 @@ export default function ChatSection({socketRef,roomInfos,setRoomInfos, settings,
         URL.revokeObjectURL(blobUrl);
         document.body.removeChild(link);
     }
+
+    //Function to handle File upload & send it to peers
     const { openFilePicker, filesContent, loading } = useFilePicker({
         multiple: false,
         onFilesSuccessfullySelected: ({ plainFiles, filesContent }) => {
             
             const reader = new FileReader();
             reader.onload = () => {
-                console.log(reader.result)
-                  
                 const newm = roomInfos.messages
                 const date = new Date()
                 if(plainFiles[0].type.startsWith('image/')){
@@ -57,22 +58,15 @@ export default function ChatSection({socketRef,roomInfos,setRoomInfos, settings,
                         date: date.getHours() + ":"+ (date.getMinutes() < 10 ? "0": "") + date.getMinutes()
                     })
                     roomInfos.peers.forEach(p => {
-                        p.peer.send(AES.encrypt(JSON.stringify({
+                        p.peer.send(JSON.stringify({
                             type: "img",
                             pdp: settings.profilePicture,
                             userName: settings.userName,
-                            imgSrc: reader.result,
+                            imgSrc: AES.encrypt(reader.result,settings.sharedKey).toString(),
                             fType: plainFiles[0].type,
                             fileName: plainFiles[0].name
-                        }), "secret").toString())
-                        // p.peer.send(encryptMessage(p.publicKey,JSON.stringify({
-                        //     type: "img",
-                        //     pdp: settings.profilePicture,
-                        //     userName: settings.userName,
-                        //     imgSrc: reader.result,
-                        //     fType: plainFiles[0].type,
-                        //     fileName: plainFiles[0].name
-                        // })).toString())
+                        }))
+                  
                     });
                 
                 }else{
@@ -85,56 +79,33 @@ export default function ChatSection({socketRef,roomInfos,setRoomInfos, settings,
                         fileSize: "10KB"
                     })
                     roomInfos.peers.forEach(p => {
-                        p.peer.send(AES.encrypt(JSON.stringify({
+                        p.peer.send(JSON.stringify({
                             type: "file",
                             pdp: settings.profilePicture,
                             userName: settings.userName,
-                            src: reader.result,
+                            src: AES.encrypt(reader.result,settings.sharedKey).toString(),
                             fType: plainFiles[0].type,
                             fileName: plainFiles[0].name,
                             fileSize: "10KB"
-                        }),"secret").toString())
-                        // p.peer.send(encryptMessage(p.publicKey,JSON.stringify({
-                        //     type: "file",
-                        //     pdp: settings.profilePicture,
-                        //     userName: settings.userName,
-                        //     src: reader.result,
-                        //     fType: plainFiles[0].type,
-                        //     fileName: plainFiles[0].name,
-                        //     fileSize: "10KB"
-                        // })).toString())
+                        }))
+                
                     });
                 }
-
-            
-        
                 setRoomInfos(roomInfos => ({
                     ...roomInfos,
                     messages: newm
                 }));
                
-         
-                
             };
             reader.readAsDataURL(plainFiles[0]);
             
-         
-          
-        
-           
           }
     });
-    const getMessag = () => {
-        socketRef.current.emit('get messages', roomInfos.roomID, (messages) => {
-            console.log('Messages:', messages);
-
-        
-        });
-    }
+    // Function To sync Messages
     const getMessagee = () => {
-        console.log("aaaa")
+     
         socketRef.current.emit('get messages', roomInfos.roomID, (messages) => {
-            console.log(messages)
+           
             if(messages){
                 const newm = roomInfos.messages
                 messages.forEach(mess => {
@@ -160,7 +131,7 @@ export default function ChatSection({socketRef,roomInfos,setRoomInfos, settings,
                            
                             newm.push((messa))
                         }
-                        console.log(mess.message)
+                       
                     }
                  
                
@@ -176,38 +147,22 @@ export default function ChatSection({socketRef,roomInfos,setRoomInfos, settings,
         
         });
     }
+
+    //Function to handle message submit and send it to peers
     const handleSubmit = (e) =>{
         if (e.key === 'Enter' && text.length != 0 && text != " ") {
-            console.log(settings.sharedKey)
+            console.log(roomInfos.peers[0].publicKey)
        
             roomInfos.peers.forEach(p => {
                 const a = AES.encrypt(text, settings.sharedKey).toString()
-                console.log(a)
+             
                 p.peer.send(JSON.stringify({
                     type: "msg",
                     pdp: settings.profilePicture,
                     userName: settings.userName,
                     message: a
                 }))
-                // const msg = await encryptMessage(p.publicKey,JSON.stringify({
-                //     type: "msg",
-                //     pdp: settings.profilePicture,
-                //     userName: settings.userName,
-                //     message: text
-                // })).toString()
-                // console.log(msg)
-                // p.peer.send(AES.encrypt(JSON.stringify({
-                //     type: "msg",
-                //     pdp: settings.profilePicture,
-                //     userName: settings.userName,
-                //     message: text
-                // }), settings.sharedKey).toString())
-                // p.peer.send(encryptMessage(p.publicKey,JSON.stringify({
-                //     type: "msg",
-                //     pdp: settings.profilePicture,
-                //     userName: settings.userName,
-                //     message: text
-                // })).toString())
+       
             });
       
 
@@ -245,13 +200,13 @@ export default function ChatSection({socketRef,roomInfos,setRoomInfos, settings,
     return (
       <div className={"md:w-2/3 lg:w-3/4 relative dark:bg-[#1a202c]  h-screen overflow-hidden"}>
 
-            {/* {settings.leftSectionStatus &&  */}
+        
             <div className={"h-24 bg-[#fdfdfd] border-[#d8dae0] dark:border-[#3f465a] border-b-[1px] p-10 flex items-center dark:bg-[#1a202c] justify-between"}>
                 
             <div className=" items-center gap-4  " >
                 
                 <div>
-                    {/* <p className="font-bold dark:text-gray-200">{roomInfos.roomName}</p> */}
+                
                     <p className="font-bold dark:text-gray-200" >{language.room} {roomInfos.roomID.length == 0 ? <span className=' dark:text-gray-400 text-sm'>{language.not_connected}</span>: <span className=' dark:text-gray-400 text-sm'>{roomInfos.roomID} <FontAwesomeIcon size="lg" icon={faPaste} className="dark:text-gray-500 cursor-pointer ml-2 hover:text-black" onClick={() => {navigator.clipboard.writeText(roomInfos.roomID)}}/></span>}</p>
                 </div>
                 <p className=" dark:text-gray-200 md:hidden">Online peers: <span className=' text-[#1786d8] font-bold'>{roomInfos.peers.length}</span></p>
@@ -264,7 +219,7 @@ export default function ChatSection({socketRef,roomInfos,setRoomInfos, settings,
             </div>
 
         </div>
-            {/* } */}
+       
             
          
             <div className="px-9 flex flex-col py-3 overflow-y-scroll h-[calc(100vh-22.5rem)] md:h-[calc(100vh-13rem)]">
@@ -310,10 +265,7 @@ export default function ChatSection({socketRef,roomInfos,setRoomInfos, settings,
                                     
                                     </div>
                                 </div>
-                                // <div className="flex flex-col w-fit" key={index}>
-                                   
-                                //     <p className="text-gray-500 text-xs text-right">{message.date}</p>
-                                // </div>
+                          
                             )
                         }
                     }else if(message.type == "file"){
@@ -346,10 +298,7 @@ export default function ChatSection({socketRef,roomInfos,setRoomInfos, settings,
                                         </div>
                                     </div>
                                 </div>
-                                // <div className="flex flex-col w-fit" key={index}>
-                                   
-                                //     <p className="text-gray-500 text-xs text-right">{message.date}</p>
-                                // </div>
+                              
                             )
                         }
                     }
@@ -363,12 +312,8 @@ export default function ChatSection({socketRef,roomInfos,setRoomInfos, settings,
               
                 <FontAwesomeIcon icon={faPlus} size="lg" className="text-[#1786d8] bg-[#f1f2f4] p-4 rounded-3xl dark:bg-[#262d3b] cursor-pointer" onClick={() => openFilePicker()}/>
 
-                {/* <i className="fa-solid fa-plus text-[#1786d8] bg-[#f1f2f4] p-4 rounded-3xl" ></i> */}
                 <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => {handleSubmit(e)}} type="text" className="  w-[83%] lg:w-[90%] h-12 rounded-3xl bg-[#f1f2f4] text-gray-700 outline-none px-6 dark:bg-[#262d3b] dark:text-white" placeholder={language.input_text}/>
-                {/* <i className="fa-solid fa-microphone text-[24px]"></i>
-                <i className="fa-solid fa-camera text-[24px]"></i> */}
-                {/* <FontAwesomeIcon size="lg" icon={faMicrophone} className="dark:text-gray-200" onClick={() => getMessag()}/>
-                <FontAwesomeIcon icon={faCamera} size="lg" className='dark:text-gray-200'/> */}
+             
             </div>
         </div>
     );

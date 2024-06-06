@@ -46,9 +46,13 @@ export default function Home() {
         }else{
           setSettings(sett);
         }
-        const key = await generateKeyPair()
-        setSettings({...sett, publicKey: key[0], privateKey: key[1]})
-  
+        if(sett.userName == ''){
+          setSettings({...sett, userName: "User"+ Math.floor(Math.random() * 10000)})
+        }
+        
+        // const key = await generateKeyPair()
+        // setSettings({...sett, publicKey: key[0], privateKey: key[1]})
+        
         
       }
       socketRef.current = io.connect("http://localhost:8000");

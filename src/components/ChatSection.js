@@ -8,6 +8,7 @@ import { useFilePicker } from 'use-file-picker';
 
 import { AES } from 'crypto-js';
 import { storeMessage } from '../services/storage'
+import { decryptMessage, encryptMessage } from '@/services/encryption';
 
 export default function ChatSection({socketRef,roomInfos,setRoomInfos, settings, setSettings, language}) {
     const [text,setText] = useState("")
@@ -149,10 +150,8 @@ export default function ChatSection({socketRef,roomInfos,setRoomInfos, settings,
     }
 
     //Function to handle message submit and send it to peers
-    const handleSubmit = (e) =>{
+    const handleSubmit = async (e) =>{
         if (e.key === 'Enter' && text.length != 0 && text != " ") {
-            
-       
             roomInfos.peers.forEach(p => {
                 const a = AES.encrypt(text, settings.sharedKey).toString()
              

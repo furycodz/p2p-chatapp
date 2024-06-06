@@ -8,7 +8,7 @@ import Peer from "simple-peer";
 import useSound from 'use-sound'
 import { v1 as uuid } from 'uuid';
 import { AES, enc } from 'crypto-js';
-import { generateSymetricalKey} from '../services/encryption'
+import { decryptMessage, encryptMessage, generateSymetricalKey} from '../services/encryption'
 import { sendNotification } from '@/services/notifications';
 
 
@@ -103,7 +103,7 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
             if(sharedKeyy.length > 0){
                 peer.write(JSON.stringify({
                     type: "key",
-                    sharedKey: sharedKeyy
+                    sharedKey: encryptMessage(payload.publicKey,sharedKeyy)
                 }))
             }
             
@@ -182,8 +182,8 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
                     date: date.getHours() + ":"+ (date.getMinutes() < 10 ? "0": "") + date.getMinutes()
                 })
             }else if(jsondata.type == "key"){
-                setSettings({...settings, sharedKey: jsondata.sharedKey})
-                sharedKeyy = jsondata.sharedKey
+                setSettings({...settings, sharedKey: decryptMessage(settings.privateKey,jsondata.sharedKey)})
+                sharedKeyy = decryptMessage(settings.privateKey,jsondata.sharedKey)
             }
             
           
@@ -279,8 +279,8 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
                     date: date.getHours() + ":"+ (date.getMinutes() < 10 ? "0": "") + date.getMinutes()
                 })
             }else if(jsondata.type == "key"){
-                setSettings({...settings, sharedKey: jsondata.sharedKey})
-                sharedKeyy = jsondata.sharedKey
+                setSettings({...settings, sharedKey: decryptMessage(settings.privateKey,jsondata.sharedKey)})
+                sharedKeyy = decryptMessage(settings.privateKey,jsondata.sharedKey)
                 
             }
             

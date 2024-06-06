@@ -36,7 +36,7 @@ export default function Home() {
   })
 
   // React hook to load settings & connect to Signaling server
-  useEffect(() => {
+  useEffect(async() => {
     if (typeof window !== 'undefined') {
       
       const sett = JSON.parse(localStorage.getItem('settings'));
@@ -46,7 +46,7 @@ export default function Home() {
         }else{
           setSettings(sett);
         }
-        const key = generateKeyPair()
+        const key = await generateKeyPair()
         setSettings({...sett, publicKey: key[0], privateKey: key[1]})
   
         

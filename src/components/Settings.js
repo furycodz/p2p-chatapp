@@ -130,12 +130,13 @@ export default function ChatSection({language, settings, setSettings}) {
                     {language.settings_select_language}
                 </label>
                 </div>
+                
 
            
            
               
             </div>
-        
+            <h2 className="font-bold text-[#1d425d]" >Public Key: {settings.publicKey}</h2>
         </div> 
     </Modal>
     </div>

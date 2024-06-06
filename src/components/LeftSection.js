@@ -95,6 +95,7 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
                 publicKey: payload.publicKey
              
              })
+            console.log(payload.publicKey)
             setRoomInfos(roomInfos => ({
                 ...roomInfos,
                 peers: newm
@@ -122,7 +123,7 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
         setRoomID("")
     }
     //Function to create a new Peer & handle data receiving
-    function createPeer(userToSignal, callerID, stream) {
+    function createPeer(userToSignal, callerID) {
         const peer = new Peer({
             initiator: true,
             trickle: false,
@@ -195,11 +196,24 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
                 playNotificationSound()
             }
         })
+        peer.on('error', (err) => {
+            
+        })
+
+        peer.on('close', () => {
+            
+            const peersAfterRemoval = roomInfos.peers.filter(peer => peer.id !== callerID);
+            setRoomInfos(roomInfos => ({
+                ...roomInfos,
+                peers: peersAfterRemoval
+            }));
+        })
+
 
         return peer;
     }
     //Function to add a Peer and handle data receiving
-    function addPeer(incomingSignal, callerID, stream) {
+    function addPeer(incomingSignal, callerID) {
         const peer = new Peer({
             initiator: false,
             trickle: false,
@@ -214,6 +228,17 @@ export default function Home({language, settings,setSettings, socketRef, roomInf
         })
         peer.on("signal", signal => {
             socketRef.current.emit("returning signal", { signal, callerID })
+        })
+        peer.on('error', (err) => {
+            
+        })
+        peer.on('close', () => {
+          
+            const peersAfterRemoval = roomInfos.peers.filter(peer => peer.id !== callerID);
+            setRoomInfos(roomInfos => ({
+                ...roomInfos,
+                peers: peersAfterRemoval
+            }));
         })
         peer.on('data', data => {
             const jsondata = JSON.parse(data.toString())
